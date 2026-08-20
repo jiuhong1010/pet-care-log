@@ -13,17 +13,17 @@ export const PET_AVATAR_OPTIONS = [
   { value: '🐢', label: '小乌龟' },
 ] as const
 
-const PORTRAIT_VERTICAL_POSITIONS = [
-  '8.5%',
-  '8.5%',
-  '8.5%',
-  '8.5%',
-  '8.5%',
-  '81.5%',
-  '81.5%',
-  '81.5%',
-  '84.5%',
-  '93%',
+const PORTRAIT_FRAMES = [
+  { vertical: '0%', scale: 1.18, x: '0%', y: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '-1%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
+  { vertical: '100%', scale: 1.1, x: '0%', y: '0%' },
+  { vertical: '100%', scale: 1.1, x: '0%', y: '0%' },
+  { vertical: '100%', scale: 1.12, x: '0%', y: '0%' },
+  { vertical: '100%', scale: 1.12, x: '-1%', y: '-1%' },
+  { vertical: '100%', scale: 1.25, x: '0%', y: '-2%' },
 ] as const
 
 type PetAvatarProps = {
@@ -43,17 +43,24 @@ export function PetAvatar({ avatar, className = '', decorative = false }: PetAva
   const index = PET_AVATAR_OPTIONS.indexOf(details)
   const column = index % 5
   const horizontalPosition = column * 25
+  const frame = PORTRAIT_FRAMES[index]
 
   return (
     <span
       className={`pet-portrait ${className}`}
-      style={{
-        backgroundImage: `url(${avatarSprite})`,
-        backgroundPosition: `${horizontalPosition}% ${PORTRAIT_VERTICAL_POSITIONS[index]}`,
-      }}
       aria-hidden={decorative ? 'true' : undefined}
       aria-label={decorative ? undefined : `${details.label}头像`}
       role={decorative ? undefined : 'img'}
-    />
+    >
+      <span
+        className="pet-portrait-art"
+        style={{
+          backgroundImage: `url(${avatarSprite})`,
+          backgroundPosition: `${horizontalPosition}% ${frame.vertical}`,
+          transform: `translateX(-50%) translate(${frame.x}, ${frame.y}) scale(${frame.scale})`,
+        }}
+        aria-hidden="true"
+      />
+    </span>
   )
 }

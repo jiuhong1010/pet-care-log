@@ -475,14 +475,26 @@
 }
 
 .pet-portrait {
+  position: relative;
   display: block;
   flex: none;
   overflow: hidden;
   border-radius: 14px;
   background-color: rgb(var(--c-bg-card));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+}
+
+.pet-portrait-art {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  display: block;
+  width: 72%;
+  border-radius: inherit;
   background-repeat: no-repeat;
   background-size: 500% auto;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+  transform-origin: center;
 }
 
 .pet-switch-avatar {

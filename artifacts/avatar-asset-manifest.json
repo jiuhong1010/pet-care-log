@@ -22,7 +22,7 @@
       "exportSize": "960x640",
       "ratio": "3:2 contact sheet, 5 columns x 2 rows",
       "postProcessing": "Alpha-preserving resize from 1536x1024 to 960x640",
-      "cropStrategy": "CSS sprite crop with background-size 500% auto, portrait aspect-ratio slots, and per-animal vertical focal positions",
+      "cropStrategy": "Nested CSS sprite crop with fixed portrait slots plus per-animal vertical focus, optical scale, and micro-offset calibration",
       "generatedOutput": "/Users/bytedance/.codex/generated_images/01a01e8d-1000-7572-a5b0-cae701da0678/exec-bde9f982-a861-480f-9b28-3b9f966de697.png",
       "targetPath": "src/assets/generated/pet-avatar-sprite-v2.png",
       "provenance": "system imagegen session record",
