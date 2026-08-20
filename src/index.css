@@ -335,14 +335,28 @@
   color: white;
 }
 
-.welcome-symbol {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  place-items: center;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.11);
-  color: rgb(255 255 255 / 0.92);
+.welcome-pets {
+  position: relative;
+  width: 132px;
+  height: 86px;
+}
+
+.welcome-pet {
+  position: absolute;
+  top: 0;
+  width: 86px;
+  height: 86px;
+  border: 4px solid rgb(var(--c-brand-deep));
+  box-shadow: 0 8px 24px rgb(8 9 24 / 0.18);
+}
+
+.welcome-pet-cat {
+  left: 0;
+  z-index: 1;
+}
+
+.welcome-pet-dog {
+  left: 48px;
 }
 
 .welcome-copy {
@@ -459,6 +473,22 @@
   filter: brightness(0.96);
 }
 
+.pet-portrait {
+  display: block;
+  flex: none;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: rgb(var(--c-bg-card));
+  background-repeat: no-repeat;
+  background-size: 700% auto;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+}
+
+.pet-switch-avatar {
+  width: 26px;
+  height: 26px;
+}
+
 .pet-hero {
   display: grid;
   gap: 18px;
@@ -476,14 +506,38 @@
 }
 
 .pet-avatar {
+  width: 82px;
+  height: 82px;
+  flex: none;
+  border: 3px solid rgb(255 255 255 / 0.18);
+  box-shadow: 0 10px 24px rgb(8 9 24 / 0.22);
+}
+
+.avatar-choice {
   display: grid;
-  width: 64px;
-  height: 64px;
+  width: 62px;
+  height: 62px;
   flex: none;
   place-items: center;
+  border: 2px solid transparent;
   border-radius: 50%;
-  background: rgb(255 255 255 / 0.12);
-  font-size: 31px;
+  padding: 3px;
+  background: transparent;
+  transition: border-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 160ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.avatar-choice .pet-portrait {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-choice[aria-pressed='true'] {
+  border-color: rgb(var(--c-blue));
+}
+
+.avatar-choice:hover {
+  transform: translateY(-1px);
 }
 
 .pet-context {
@@ -802,6 +856,11 @@
     grid-template-columns: minmax(0, 1fr) minmax(250px, 0.72fr);
     align-items: center;
     padding: 24px 26px;
+  }
+
+  .pet-avatar {
+    width: 96px;
+    height: 96px;
   }
 
   .care-status {

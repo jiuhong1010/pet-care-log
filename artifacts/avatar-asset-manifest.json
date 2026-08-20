@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "workflowMode": "redesign",
+  "executionMode": "single-agent",
+  "sourceOfTruth": [
+    "Existing 安静的照护台 interface and design tokens",
+    "Inspected generated 5x2 pet portrait contact sheet"
+  ],
+  "imageChannel": "native-image2 source=system-imagegen",
+  "assets": [
+    {
+      "id": "pet-avatar-sprite-v2",
+      "uiLocations": [
+        "first-run welcome illustration",
+        "pet switcher",
+        "active pet hero",
+        "pet avatar picker"
+      ],
+      "type": "illustration",
+      "implementation": "image2-asset",
+      "cssSlotSizes": ["26x26", "62x62", "82x82", "86x86", "96x96"],
+      "exportSize": "960x640",
+      "ratio": "3:2 contact sheet, 5 columns x 2 rows",
+      "postProcessing": "Alpha-preserving resize from 1536x1024 to 960x640",
+      "cropStrategy": "CSS sprite crop with background-size 700% auto and face-centered per-cell positions",
+      "generatedOutput": "/Users/bytedance/.codex/generated_images/01a01e8d-1000-7572-a5b0-cae701da0678/exec-bde9f982-a861-480f-9b28-3b9f966de697.png",
+      "targetPath": "src/assets/generated/pet-avatar-sprite-v2.png",
+      "provenance": "system imagegen session record",
+      "negativeConstraints": [
+        "no readable text",
+        "no logo or watermark",
+        "no UI glyphs or controls",
+        "no grid lines or cell borders"
+      ]
+    }
+  ]
+}

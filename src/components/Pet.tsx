@@ -3,8 +3,7 @@ import { SPECIES_LABEL, type Pet, type Species } from '../types'
 import { describeAge } from '../lib/date'
 import { FormRow, Group, Segmented, Sheet } from './ui'
 import { UiIcon } from './UiIcon'
-
-const AVATARS = ['🐱', '🐈', '🐈‍⬛', '🐶', '🐕', '🐩', '🐰', '🐹', '🦜', '🐢']
+import { PET_AVATAR_OPTIONS, PetAvatar } from './PetAvatar'
 
 /** 宠物切换：横向滚动的胶囊，选中态用 tint 填充 */
 export function PetSwitcher({
@@ -32,7 +31,7 @@ export function PetSwitcher({
               ${active ? 'bg-blue text-white' : 'text-label'}`}
             style={active ? undefined : { background: 'var(--c-fill-3)' }}
           >
-            <span aria-hidden="true">{p.avatar}</span>
+            <PetAvatar avatar={p.avatar} className="pet-switch-avatar" decorative />
             {p.name}
           </button>
         )
@@ -56,9 +55,7 @@ export function PetHeader({ pet, dueCount }: { pet: Pet; dueCount: number }) {
   return (
     <section className="pet-hero" aria-labelledby={`pet-${pet.id}`}>
       <div className="pet-identity">
-        <div className="pet-avatar" aria-hidden="true">
-          {pet.avatar}
-        </div>
+        <PetAvatar avatar={pet.avatar} className="pet-avatar" decorative />
         <div className="min-w-0">
           <p className="pet-context">正在照顾</p>
           <h1 id={`pet-${pet.id}`} className="pet-name">
@@ -164,18 +161,16 @@ export function PetFormSheet({
 
         <Group header="头像">
           <div className="flex flex-wrap gap-2 px-gutter py-3">
-            {AVATARS.map((a) => (
+            {PET_AVATAR_OPTIONS.map((option) => (
               <button
-                key={a}
+                key={option.value}
                 type="button"
-                onClick={() => setAvatar(a)}
-                aria-pressed={avatar === a}
-                aria-label={`头像 ${a}`}
-                className={`h-11 w-11 rounded-full text-xl transition duration-150 ease-ios
-                  ${avatar === a ? 'ring-2 ring-blue' : ''}`}
-                style={{ background: 'var(--c-fill-3)' }}
+                onClick={() => setAvatar(option.value)}
+                aria-pressed={avatar === option.value}
+                aria-label={`选择${option.label}头像`}
+                className="avatar-choice"
               >
-                <span aria-hidden="true">{a}</span>
+                <PetAvatar avatar={option.value} decorative />
               </button>
             ))}
           </div>

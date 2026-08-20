@@ -27,6 +27,7 @@ import { FeedbackBox, SurveyCard, ValidationSummary } from './components/Validat
 import {
   UiIcon,
 } from './components/UiIcon'
+import { PetAvatar } from './components/PetAvatar'
 
 type SheetName = 'pet' | 'shot' | 'weight' | 'med' | 'visit' | 'settings' | null
 
@@ -166,8 +167,9 @@ export default function App() {
       {!activePet ? (
         <main className="page-gutter first-run">
           <section className="welcome-panel">
-            <div className="welcome-symbol" aria-hidden="true">
-              <UiIcon name="paw" size={42} />
+            <div className="welcome-pets" aria-hidden="true">
+              <PetAvatar avatar="🐱" className="welcome-pet welcome-pet-cat" decorative />
+              <PetAvatar avatar="🐶" className="welcome-pet welcome-pet-dog" decorative />
             </div>
             <div className="welcome-copy">
               <h1>每一次照顾，都有迹可循</h1>

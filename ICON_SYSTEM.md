@@ -7,7 +7,7 @@
 | glyph | 用途 | Phosphor 名称 | size | weight | 容器 / 状态 | 可访问名称来源 |
 | --- | --- | --- | --- | --- | --- | --- |
 | paw | 产品标记、欢迎区 | PawPrint | 21 / 42 | regular | 品牌标记 / 欢迎符号 | 周边真实文字 |
-| settings | 打开设置 | GearSix | 22 | regular | 44×44 按钮 | `aria-label="设置"` |
+| settings | 打开设置 | SlidersHorizontal | 22 | regular | 44×44 按钮 | `aria-label="设置"` |
 | plus | 新增宠物、记录 | Plus | 16–19 | regular | 44px 按钮 | 按钮文字或 `aria-label` |
 | syringe | 疫苗、疫苗驱虫入口 | Syringe | 20 / 34 | regular | 快捷入口 / 空状态 | 周边真实文字 |
 | pill | 驱虫、用药 | Pill | 20 / 34 | regular | 快捷入口 / 记录行 | 周边真实文字 |
@@ -21,4 +21,4 @@
 | download | 导出备份 | DownloadSimple | 16 / 20 | regular | 按钮 / 设置行 | 周边真实文字 |
 | feedback | 反馈入口 | ChatCircleDots | 20 | regular | 设置行 | 周边真实文字 |
 
-宠物头像中的 emoji 是用户选择的身份内容，不承担设置、导航、状态或快捷操作 glyph 的职责，因此保留为内容层资产。
+宠物头像是通过 image2 生成的插画图集，属于身份内容资产，不承担设置、导航、状态或快捷操作 glyph 的职责。数据层继续保留原 emoji 值，以兼容已有记录和导入备份。
