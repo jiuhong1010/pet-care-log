@@ -48,9 +48,10 @@ export function upcomingDues(shots: Shot[]): DueInfo[] {
     .sort((a, b) => a.daysLeft - b.daysLeft)
 }
 
-export const DUE_STYLE: Record<DueStatus, { chip: string; text: string }> = {
-  overdue: { chip: 'bg-berry-300/40 text-berry-500', text: 'text-berry-500' },
-  soon: { chip: 'bg-peach-300/40 text-peach-500', text: 'text-peach-500' },
-  later: { chip: 'bg-mint-300/40 text-mint-700', text: 'text-mint-700' },
-  none: { chip: 'bg-cream-300 text-cocoa-600', text: 'text-cocoa-600' },
+/** 到期状态对应的 iOS 语义色：逾期用 red，临近用 orange，正常用 green */
+export const DUE_STYLE: Record<DueStatus, { badge: string; text: string }> = {
+  overdue: { badge: 'bg-red/12 text-red', text: 'text-red' },
+  soon: { badge: 'bg-orange/12 text-orange', text: 'text-orange' },
+  later: { badge: 'bg-green/12 text-green', text: 'text-green' },
+  none: { badge: 'bg-fill-3 text-label-2', text: 'text-label-2' },
 }

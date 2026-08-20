@@ -42,9 +42,26 @@ npm run preview  # 预览构建产物
 | 选择 | 原因 |
 |---|---|
 | localStorage，无后端 | 今天就能发出去；没有账号系统、没有服务器成本，也不碰用户数据 |
-| 手写 SVG 折线图，不引图表库 | 引 recharts 会让首屏体积翻倍，而这个页面要在小红书的链接里秒开。当前 gzip 后 55 kB |
+| 手写 SVG 折线图，不引图表库 | 引 recharts 会让首屏体积翻倍，而这个页面要在小红书的链接里秒开。当前 gzip 后 56 kB |
 | 本地日历日计算，不用 UTC | 疫苗到期只关心哪一天。用 UTC 或直接减时间戳会在时区和夏令时边界上差一天 |
+| 手写 SF Symbols 风格图标，不引图标库 | iOS 观感的关键是图标与文字的视觉重量一致，通用图标库（Feather、Lucide）的描边比例不同，混用会"不像" |
+| 系统字体栈，不加载 Web 字体 | `system-ui` 在 Apple 设备上就是 SF Pro，零下载成本，且这是苹果风的前提 |
 | Vite + React + TS + Tailwind | 单人维护，类型安全省下的调试时间比写类型的时间多 |
+
+## 视觉规范：iOS 设置 / 健康 App
+
+采用 inset grouped 分组列表形态，具体数值：
+
+- **语义色**：systemBlue / Green / Red / Orange 等，深浅两套通过 CSS 变量随 `prefers-color-scheme` 切换
+- **背景分层**：浅色 `#F2F2F7` 列表底 + `#FFFFFF` 卡片；深色纯黑底 + `#1C1C1E` 卡片（深色下加 0.5px 描边，否则卡片边界会消失在黑底里）
+- **文字层级**：label 不透明、secondaryLabel 60%、tertiaryLabel 30%
+- **排版**：Dynamic Type 默认尺寸，body 17/22、largeTitle 34/41，含 Apple 规范的 tracking 值
+- **布局**：卡片 10px 圆角、16px 左右外边距、分隔线左缩进 16px 且线宽 0.5px、最小点击尺寸 44px
+- **动效**：`cubic-bezier(0.32, 0.72, 0, 1)` 近似 iOS 的弹层曲线；尊重 `prefers-reduced-motion`
+
+> **色值来源说明**：Apple 从不公开保证的 hex 值，因为系统色按 trait environment 自适应。项目里的数值来自社区对 `UIColor` 的逆向测量，多个独立来源交叉印证，对 Web 复刻足够，但不是官方规范。
+
+**深色模式跟随系统自动切换**，没有手动开关——苹果用户的预期就是跟随系统。
 
 **已知的边界**：
 

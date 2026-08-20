@@ -1,22 +1,16 @@
 import { useState } from 'react'
 import type { Feedback, SurveyAnswer } from '../types'
+import { Group } from './ui'
 
 /**
  * 需求验证钩子。
  *
- * 为什么放在产品里：这个产品的核心假设是「养宠物的人正在用备忘录/表格凑合着记」。
- * 如果假设错了，整个方向就该换。与其上线后再猜，不如让每个真实用户顺手回答一句。
- * 答案存在本地，可以在设置里一次性导出，用来判断继续做还是换方向。
+ * 这个产品的核心假设是「养宠物的人正在用备忘录/表格凑合着记」。
+ * 假设错了整个方向就该换，所以让每个真实用户顺手回答一句，
+ * 答案存本地、随导出一起带出，用来判断继续做还是换方向。
  */
 
-const OPTIONS = [
-  { key: 'memo', label: '手机备忘录', emoji: '📝' },
-  { key: 'photo', label: '拍照存相册', emoji: '📷' },
-  { key: 'sheet', label: 'Excel / 表格', emoji: '📊' },
-  { key: 'brain', label: '全靠记，经常忘', emoji: '🫠' },
-  { key: 'app', label: '别的 App', emoji: '📱' },
-  { key: 'never', label: '从来不记', emoji: '🤷' },
-]
+const OPTIONS = ['手机备忘录', '拍照存相册', 'Excel / 表格', '全靠记，经常忘', '别的 App', '从来不记']
 
 export function SurveyCard({
   onAnswer,
@@ -32,61 +26,56 @@ export function SurveyCard({
   }
 
   return (
-    <div className="card animate-pop-in border-peach-300 bg-gradient-to-br from-cream-100 to-milk">
-      <div className="mb-3 flex items-start gap-3">
-        <span className="animate-wiggle text-2xl" aria-hidden="true">
-          👋
-        </span>
-        <div>
-          <h2 className="font-hand text-xl font-bold text-cocoa-800">
-            在你用它之前，想先问一句
-          </h2>
-          <p className="text-sm text-cocoa-400">
-            在遇到这个页面之前，你是怎么记宠物的疫苗和驱虫的？
-          </p>
+    <Group header="用之前，想先问一句" footer="只存在你本地，随时可跳过">
+      <div className="px-gutter py-3.5">
+        <p className="text-body text-label">
+          在遇到这个页面之前，你是怎么记宠物的疫苗和驱虫的？
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {OPTIONS.map((o) => (
+            <button
+              key={o}
+              type="button"
+              onClick={() => pick(o)}
+              className="rounded-full px-3 py-1.5 text-subheadline font-medium text-blue
+                transition duration-150 ease-ios active:opacity-60"
+              style={{ background: 'var(--c-fill-3)' }}
+            >
+              {o}
+            </button>
+          ))}
         </div>
-      </div>
 
-      <div className="flex flex-wrap gap-2">
-        {OPTIONS.map((o) => (
-          <button
-            key={o.key}
-            type="button"
-            onClick={() => pick(o.label)}
-            className="chip border-2 border-cream-300 bg-milk text-sm text-cocoa-600
-              transition hover:border-peach-400 hover:bg-peach-300/20 hover:text-cocoa-800"
-          >
-            <span aria-hidden="true">{o.emoji}</span>
-            {o.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-        <input
-          className="field flex-1"
-          value={other}
-          onChange={(e) => setOther(e.target.value)}
-          placeholder="或者自己写一句"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && other.trim()) pick(other.trim())
-          }}
-        />
-        <div className="flex gap-2">
+        <div className="mt-3 flex gap-2">
+          <input
+            className="field-boxed flex-1"
+            value={other}
+            onChange={(e) => setOther(e.target.value)}
+            placeholder="或者自己写一句"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && other.trim()) pick(other.trim())
+            }}
+          />
           <button
             type="button"
-            className="btn-primary"
+            className="btn-plain"
             onClick={() => other.trim() && pick(other.trim())}
             disabled={!other.trim()}
           >
             提交
           </button>
-          <button type="button" className="btn-ghost" onClick={onSkip}>
+          <button
+            type="button"
+            className="btn-plain"
+            onClick={onSkip}
+            style={{ color: 'var(--c-label-2)' }}
+          >
             跳过
           </button>
         </div>
       </div>
-    </div>
+    </Group>
   )
 }
 
@@ -104,24 +93,19 @@ export function FeedbackBox({ onSubmit }: { onSubmit: (text: string) => void }) 
   }
 
   return (
-    <div>
-      <p className="mb-2 text-sm text-cocoa-400">
-        缺什么？哪里别扭？写下来，会存在你本地，导出后能一起发给我。
-      </p>
+    <div className="px-gutter py-3">
       <textarea
-        className="field min-h-[80px] resize-y"
+        className="field-boxed min-h-[76px] resize-y"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="比如：希望能提醒我，希望能两个人一起记……"
+        placeholder="缺什么？哪里别扭？"
       />
       <div className="mt-2 flex items-center gap-3">
-        <button type="button" className="btn-primary" onClick={submit} disabled={!text.trim()}>
-          留个话
+        <button type="button" className="btn-tinted" onClick={submit} disabled={!text.trim()}>
+          提交
         </button>
         {sent ? (
-          <span className="animate-pop-in text-sm font-bold text-mint-700">
-            记下了，谢谢 🌿
-          </span>
+          <span className="animate-fade-in text-subheadline text-green">已记下，谢谢</span>
         ) : null}
       </div>
     </div>
@@ -137,14 +121,18 @@ export function ValidationSummary({
 }) {
   if (!survey && feedbacks.length === 0) return null
   return (
-    <div className="rounded-2xl bg-cream-50 px-4 py-3 text-sm">
+    <div className="px-gutter py-3 text-subheadline">
       {survey ? (
-        <p className="text-cocoa-600">
-          你之前说，你是用<strong className="text-cocoa-800">「{survey.currentMethod}」</strong>记的
+        <p style={{ color: 'var(--c-label-2)' }}>
+          你之前说，你是用
+          <strong className="font-semibold text-label">「{survey.currentMethod}」</strong>
+          记的
         </p>
       ) : null}
       {feedbacks.length > 0 ? (
-        <p className="mt-1 text-cocoa-400">已留下 {feedbacks.length} 条想法</p>
+        <p className="mt-0.5" style={{ color: 'var(--c-label-3)' }}>
+          已留下 {feedbacks.length} 条想法
+        </p>
       ) : null}
     </div>
   )

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { SPECIES_LABEL, type Pet, type Species } from '../types'
 import { describeAge } from '../lib/date'
-import { Field, Sheet } from './ui'
+import { FormRow, Group, Segmented, Sheet } from './ui'
+import { IconPlus } from './icons'
 
 const AVATARS = ['🐱', '🐈', '🐈‍⬛', '🐶', '🐕', '🐩', '🐰', '🐹', '🦜', '🐢']
 
+/** 宠物切换：横向滚动的胶囊，选中态用 tint 填充 */
 export function PetSwitcher({
   pets,
   activeId,
@@ -17,7 +19,7 @@ export function PetSwitcher({
   onAdd: () => void
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex gap-2 overflow-x-auto px-gutter pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {pets.map((p) => {
         const active = p.id === activeId
         return (
@@ -26,16 +28,12 @@ export function PetSwitcher({
             type="button"
             onClick={() => onSelect(p.id)}
             aria-pressed={active}
-            className={`flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold transition
-              ${
-                active
-                  ? 'border-peach-400 bg-peach-300/30 text-cocoa-800 shadow-soft'
-                  : 'border-cream-300 bg-milk text-cocoa-600 hover:border-peach-300'
-              }`}
+            className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-subheadline
+              font-medium transition duration-150 ease-ios active:opacity-60
+              ${active ? 'bg-blue text-white' : 'text-label'}`}
+            style={active ? undefined : { background: 'var(--c-fill-3)' }}
           >
-            <span aria-hidden="true" className="text-lg">
-              {p.avatar}
-            </span>
+            <span aria-hidden="true">{p.avatar}</span>
             {p.name}
           </button>
         )
@@ -43,34 +41,39 @@ export function PetSwitcher({
       <button
         type="button"
         onClick={onAdd}
-        className="rounded-full border-2 border-dashed border-cocoa-400/40 px-4 py-2 text-sm
-          font-bold text-cocoa-400 transition hover:border-peach-400 hover:text-peach-500"
+        aria-label="添加宠物"
+        className="flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-subheadline
+          font-medium text-blue transition active:opacity-60"
+        style={{ background: 'var(--c-fill-3)' }}
       >
-        ＋ 加一只
+        <IconPlus size={16} />
       </button>
     </div>
   )
 }
 
+/** 宠物信息卡：头像 + 名字 + 年龄 */
 export function PetHeader({ pet }: { pet: Pet }) {
   const age = describeAge(pet.birthday)
   return (
-    <div className="flex items-center gap-4">
-      <div
-        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full
-          border-2 border-cream-300 bg-cream-200 text-3xl"
-        aria-hidden="true"
-      >
-        {pet.avatar}
+    <Group>
+      <div className="flex items-center gap-3.5 px-gutter py-3.5">
+        <div
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-3xl"
+          style={{ background: 'var(--c-fill-3)' }}
+          aria-hidden="true"
+        >
+          {pet.avatar}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-title3 font-semibold text-label">{pet.name}</p>
+          <p className="text-subheadline" style={{ color: 'var(--c-label-2)' }}>
+            {SPECIES_LABEL[pet.species]}
+            {age ? ` · ${age}` : ''}
+          </p>
+        </div>
       </div>
-      <div className="min-w-0">
-        <h1 className="truncate font-hand text-2xl font-bold text-cocoa-800">{pet.name}</h1>
-        <p className="text-sm text-cocoa-400">
-          {SPECIES_LABEL[pet.species]}
-          {age ? ` · ${age}` : ''}
-        </p>
-      </div>
-    </div>
+    </Group>
   )
 }
 
@@ -104,20 +107,52 @@ export function PetFormSheet({
   }
 
   return (
-    <Sheet open={open} title="添加一只毛孩子" onClose={onClose}>
+    <Sheet
+      open={open}
+      title="新增宠物"
+      onClose={onClose}
+      onSubmit={submit}
+      submitLabel="添加"
+      submitDisabled={!name.trim()}
+    >
       <div className="space-y-4">
-        <Field label="它叫什么">
-          <input
-            className="field"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="比如：糯米"
-            autoFocus
-          />
-        </Field>
+        <Group>
+          <div className="row-divider">
+            <FormRow label="名字">
+              <input
+                className="field"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="必填"
+                autoFocus
+              />
+            </FormRow>
+            <FormRow label="生日">
+              <input
+                type="date"
+                className="field"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+              />
+            </FormRow>
+          </div>
+        </Group>
 
-        <Field label="选个头像">
-          <div className="flex flex-wrap gap-2">
+        <Group header="种类">
+          <div className="px-gutter py-2.5">
+            <Segmented
+              value={species}
+              onChange={setSpecies}
+              options={(Object.keys(SPECIES_LABEL) as Species[]).map((s) => ({
+                value: s,
+                label: SPECIES_LABEL[s],
+              }))}
+            />
+          </div>
+        </Group>
+
+        <Group header="头像">
+          <div className="flex flex-wrap gap-2 px-gutter py-3">
             {AVATARS.map((a) => (
               <button
                 key={a}
@@ -125,62 +160,15 @@ export function PetFormSheet({
                 onClick={() => setAvatar(a)}
                 aria-pressed={avatar === a}
                 aria-label={`头像 ${a}`}
-                className={`h-11 w-11 rounded-2xl border-2 text-xl transition
-                  ${
-                    avatar === a
-                      ? 'border-peach-400 bg-peach-300/30 scale-105'
-                      : 'border-cream-300 bg-cream-50 hover:border-peach-300'
-                  }`}
+                className={`h-11 w-11 rounded-full text-xl transition duration-150 ease-ios
+                  ${avatar === a ? 'ring-2 ring-blue' : ''}`}
+                style={{ background: 'var(--c-fill-3)' }}
               >
                 <span aria-hidden="true">{a}</span>
               </button>
             ))}
           </div>
-        </Field>
-
-        <Field label="种类">
-          <div className="flex gap-2">
-            {(Object.keys(SPECIES_LABEL) as Species[]).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSpecies(s)}
-                aria-pressed={species === s}
-                className={`flex-1 rounded-2xl border-2 py-2 text-sm font-bold transition
-                  ${
-                    species === s
-                      ? 'border-peach-400 bg-peach-300/30 text-cocoa-800'
-                      : 'border-cream-300 bg-cream-50 text-cocoa-600 hover:border-peach-300'
-                  }`}
-              >
-                {SPECIES_LABEL[s]}
-              </button>
-            ))}
-          </div>
-        </Field>
-
-        <Field label="生日" hint="不知道也没关系，可以留空">
-          <input
-            type="date"
-            className="field"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-          />
-        </Field>
-
-        <div className="flex gap-2 pt-1">
-          <button type="button" className="btn-ghost flex-1" onClick={onClose}>
-            取消
-          </button>
-          <button
-            type="button"
-            className="btn-primary flex-1"
-            onClick={submit}
-            disabled={!name.trim()}
-          >
-            存好了
-          </button>
-        </div>
+        </Group>
       </div>
     </Sheet>
   )

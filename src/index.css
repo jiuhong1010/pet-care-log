@@ -2,64 +2,204 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * iOS 语义色变量。浅色为默认，深色由 prefers-color-scheme 覆盖。
+ * 色值为社区对 UIColor 的逆向测量（非 Apple 官方公布），多来源交叉印证。
+ */
+:root {
+  color-scheme: light dark;
+
+  /* tint 色 —— 浅色模式 */
+  --c-blue: 0 122 255;
+  --c-green: 52 199 89;
+  --c-red: 255 59 48;
+  --c-orange: 255 149 0;
+  --c-teal: 90 200 250;
+  --c-pink: 255 45 85;
+
+  /* 背景层级：grouped 系列。列表底 #F2F2F7，卡片 #FFFFFF */
+  --c-bg-grouped: 242 242 247;
+  --c-bg-card: 255 255 255;
+  --c-bg-elevated: 255 255 255;
+
+  /* 文字层级。label 为不透明；其余自带 alpha */
+  --c-label: 0 0 0;
+  --c-label-2: rgba(60, 60, 67, 0.6);
+  --c-label-3: rgba(60, 60, 67, 0.3);
+  --c-label-4: rgba(60, 60, 67, 0.18);
+
+  /* 分隔线：半透明的那条用于叠在卡片上 */
+  --c-separator: rgba(60, 60, 67, 0.29);
+  --c-separator-opaque: 198 198 200;
+
+  /* 填充色，用于分段控件等 */
+  --c-fill: rgba(120, 120, 128, 0.2);
+  --c-fill-2: rgba(120, 120, 128, 0.16);
+  --c-fill-3: rgba(118, 118, 128, 0.12);
+
+  --c-gray: 142 142 147;
+  --c-gray-3: 199 199 204;
+  --c-gray-4: 209 209 214;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-blue: 10 132 255;
+    --c-green: 48 209 88;
+    --c-red: 255 69 58;
+    --c-orange: 255 159 10;
+    --c-teal: 100 210 255;
+    --c-pink: 255 55 95;
+
+    /* 深色下 grouped 底是纯黑，卡片是 #1C1C1E —— 层级靠明度差而非阴影 */
+    --c-bg-grouped: 0 0 0;
+    --c-bg-card: 28 28 30;
+    --c-bg-elevated: 44 44 46;
+
+    --c-label: 255 255 255;
+    --c-label-2: rgba(235, 235, 245, 0.6);
+    --c-label-3: rgba(235, 235, 245, 0.3);
+    --c-label-4: rgba(235, 235, 245, 0.18);
+
+    --c-separator: rgba(84, 84, 88, 0.6);
+    --c-separator-opaque: 56 56 58;
+
+    --c-fill: rgba(120, 120, 128, 0.36);
+    --c-fill-2: rgba(120, 120, 128, 0.32);
+    --c-fill-3: rgba(118, 118, 128, 0.24);
+
+    --c-gray: 142 142 147;
+    --c-gray-3: 72 72 74;
+    --c-gray-4: 58 58 60;
+  }
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-cream-100 font-body text-cocoa-800 antialiased;
-    background-image:
-      radial-gradient(circle at 12% 18%, rgba(255, 196, 168, 0.16) 0, transparent 42%),
-      radial-gradient(circle at 88% 8%, rgba(168, 219, 197, 0.16) 0, transparent 38%),
-      radial-gradient(circle at 76% 92%, rgba(245, 175, 192, 0.14) 0, transparent 40%);
-    background-attachment: fixed;
+    @apply bg-bg-grouped font-sys text-body text-label antialiased;
     min-height: 100vh;
   }
 
-  /* 让日期/数字输入框在移动端也维持圆润观感 */
+  /* iOS 的日期/数字控件在深色下需要显式声明，否则文字会是黑的 */
   input,
   select,
   textarea,
   button {
-    @apply font-body;
+    @apply font-sys;
+    color-scheme: inherit;
+  }
+
+  /**
+   * Chromium 的原生日期选择器图标在深色下是黑色方块，与深底几乎无对比。
+   * 用 filter 反色让它跟随文字颜色，同时保持可点击。
+   */
+  @media (prefers-color-scheme: dark) {
+    input[type='date']::-webkit-calendar-picker-indicator {
+      filter: invert(1) opacity(0.55);
+    }
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0.45;
+    cursor: pointer;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.8;
   }
 }
 
 @layer components {
-  .card {
-    @apply rounded-blob border-2 border-cream-300 bg-milk p-5 shadow-soft;
+  /**
+   * Inset grouped 分组卡片。10px 圆角、无阴影 —— iOS 靠明度分层，不靠投影。
+   * 深色下加一条极淡描边，因为 #1C1C1E 贴在纯黑上边界会消失。
+   */
+  .group-card {
+    @apply overflow-hidden rounded-card bg-bg-card;
   }
 
-  .label {
-    @apply mb-1.5 block text-sm font-bold text-cocoa-600;
+  @media (prefers-color-scheme: dark) {
+    .group-card {
+      box-shadow: inset 0 0 0 0.5px rgba(84, 84, 88, 0.4);
+    }
+  }
+
+  /** 分组标题：小写字号、次级色，iOS 设置里那种 */
+  .group-header {
+    @apply px-gutter pb-1.5 pt-5 text-footnote font-normal;
+    color: var(--c-label-2);
+  }
+
+  /** 列表行。44px 最小高度是 HIG 的硬性要求 */
+  .row {
+    @apply flex min-h-tap items-center gap-3 px-gutter py-2.5;
+  }
+
+  /**
+   * 行间分隔线：左侧缩进与文字对齐，右侧到边。
+   * 用伪元素而不是 border，这样最后一行不需要特殊处理。
+   */
+  .row-divider > * + * {
+    position: relative;
+  }
+
+  .row-divider > * + *::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    right: 0;
+    top: 0;
+    height: 0.5px;
+    background: var(--c-separator);
   }
 
   .field {
-    @apply w-full rounded-2xl border-2 border-cream-300 bg-cream-50 px-4 py-2.5 text-cocoa-800
-      outline-none transition placeholder:text-cocoa-400/70
-      focus:border-peach-400 focus:bg-milk focus:ring-4 focus:ring-peach-300/30;
+    @apply w-full rounded-control bg-transparent text-body text-label
+      outline-none placeholder:text-label-3;
+  }
+
+  /** 带底色的独立输入框，用于弹层里 */
+  .field-boxed {
+    @apply w-full rounded-control px-3.5 py-2.5 text-body text-label outline-none
+      placeholder:text-label-3;
+    background: var(--c-fill-3);
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm
-      font-extrabold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-tap items-center justify-center gap-1.5 rounded-control
+      px-4 text-body font-semibold transition duration-150 ease-ios
+      active:opacity-60 disabled:opacity-30;
   }
 
-  .btn-primary {
-    @apply btn bg-peach-400 text-white shadow-soft hover:bg-peach-500 hover:shadow-lift;
+  .btn-filled {
+    @apply btn bg-blue text-white;
   }
 
-  .btn-ghost {
-    @apply btn border-2 border-cream-300 bg-milk text-cocoa-600 hover:border-peach-300 hover:text-cocoa-800;
+  .btn-tinted {
+    @apply btn text-blue;
+    background: var(--c-fill-3);
   }
 
-  .chip {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold;
+  /** 纯文字按钮，iOS 里最常见的那种 */
+  .btn-plain {
+    @apply btn px-2 text-blue;
+  }
+
+  .btn-destructive {
+    @apply btn text-red;
+    background: var(--c-fill-3);
+  }
+
+  /** 状态徽标 */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption1 font-semibold;
   }
 }
 
-/* 尊重用户的减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
