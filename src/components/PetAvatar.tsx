@@ -14,16 +14,16 @@ export const PET_AVATAR_OPTIONS = [
 ] as const
 
 const PORTRAIT_FRAMES = [
-  { vertical: '0%', scale: 1.18, x: '0%', y: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '-1%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%' },
-  { vertical: '100%', scale: 1.1, x: '0%', y: '0%' },
-  { vertical: '100%', scale: 1.1, x: '0%', y: '0%' },
-  { vertical: '100%', scale: 1.12, x: '0%', y: '0%' },
-  { vertical: '100%', scale: 1.12, x: '-1%', y: '-1%' },
-  { vertical: '100%', scale: 1.25, x: '0%', y: '-2%' },
+  { vertical: '0%', scale: 1.18, x: '0%', y: '0%', clipLeft: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '-1%', clipLeft: '0%' },
+  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '8%' },
+  { vertical: '100%', scale: 1.1, x: '0%', y: '0%', clipLeft: '0%' },
+  { vertical: '100%', scale: 1.1, x: '0%', y: '0%', clipLeft: '8%' },
+  { vertical: '100%', scale: 1.12, x: '0%', y: '0%', clipLeft: '0%' },
+  { vertical: '100%', scale: 1.12, x: '-1%', y: '-1%', clipLeft: '0%' },
+  { vertical: '100%', scale: 1.25, x: '0%', y: '-2%', clipLeft: '5%' },
 ] as const
 
 type PetAvatarProps = {
@@ -57,6 +57,7 @@ export function PetAvatar({ avatar, className = '', decorative = false }: PetAva
         style={{
           backgroundImage: `url(${avatarSprite})`,
           backgroundPosition: `${horizontalPosition}% ${frame.vertical}`,
+          clipPath: `inset(0 0 0 ${frame.clipLeft})`,
           transform: `translateX(-50%) translate(${frame.x}, ${frame.y}) scale(${frame.scale})`,
         }}
         aria-hidden="true"
