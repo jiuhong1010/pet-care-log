@@ -13,6 +13,19 @@ export const PET_AVATAR_OPTIONS = [
   { value: '🐢', label: '小乌龟' },
 ] as const
 
+const PORTRAIT_VERTICAL_POSITIONS = [
+  '8.5%',
+  '8.5%',
+  '8.5%',
+  '8.5%',
+  '8.5%',
+  '81.5%',
+  '81.5%',
+  '81.5%',
+  '84.5%',
+  '93%',
+] as const
+
 type PetAvatarProps = {
   avatar: string
   className?: string
@@ -29,15 +42,14 @@ export function PetAvatar({ avatar, className = '', decorative = false }: PetAva
   const details = avatarDetails(avatar)
   const index = PET_AVATAR_OPTIONS.indexOf(details)
   const column = index % 5
-  const row = Math.floor(index / 5)
-  const horizontalPosition = ((column * 1.4 + 0.2) / 6) * 100
+  const horizontalPosition = column * 25
 
   return (
     <span
       className={`pet-portrait ${className}`}
       style={{
         backgroundImage: `url(${avatarSprite})`,
-        backgroundPosition: `${horizontalPosition}% ${row === 0 ? '17.4%' : '78.6%'}`,
+        backgroundPosition: `${horizontalPosition}% ${PORTRAIT_VERTICAL_POSITIONS[index]}`,
       }}
       aria-hidden={decorative ? 'true' : undefined}
       aria-label={decorative ? undefined : `${details.label}头像`}
