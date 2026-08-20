@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { SPECIES_LABEL, type Pet, type Species } from '../types'
 import { describeAge } from '../lib/date'
 import { FormRow, Group, Segmented, Sheet } from './ui'
-import { IconCheck, IconClock, IconPlus } from './icons'
+import { UiIcon } from './UiIcon'
 
 const AVATARS = ['🐱', '🐈', '🐈‍⬛', '🐶', '🐕', '🐩', '🐰', '🐹', '🦜', '🐢']
 
@@ -44,7 +44,7 @@ export function PetSwitcher({
         className="pet-switch min-h-tap text-blue"
         style={{ background: 'var(--c-fill-3)' }}
       >
-        <IconPlus size={16} />
+        <UiIcon name="plus" size={16} />
       </button>
     </div>
   )
@@ -73,7 +73,11 @@ export function PetHeader({ pet, dueCount }: { pet: Pet; dueCount: number }) {
 
       <div className={`care-status ${dueCount > 0 ? 'needs-attention' : 'all-clear'}`}>
         <span className="care-status-icon" aria-hidden="true">
-          {dueCount > 0 ? <IconClock size={19} /> : <IconCheck size={19} />}
+          {dueCount > 0 ? (
+            <UiIcon name="clock" size={19} />
+          ) : (
+            <UiIcon name="check" size={19} />
+          )}
         </span>
         <span>
           <strong>{dueCount > 0 ? `${dueCount} 件事需要留意` : '最近都安排妥了'}</strong>

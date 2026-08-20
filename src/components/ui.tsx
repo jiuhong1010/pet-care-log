@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { IconXmark } from './icons'
+import { UiIcon } from './UiIcon'
 
 /** inset grouped 分组：标题 + 卡片 */
 export function Group({
@@ -226,7 +226,7 @@ export function Sheet({
             </button>
           ) : (
             <button type="button" onClick={onClose} className="btn-plain" aria-label="关闭">
-              <IconXmark size={20} />
+              <UiIcon name="close" size={20} />
             </button>
           )}
         </div>

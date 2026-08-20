@@ -3,19 +3,16 @@ import { SHOT_PRESETS, type Shot, type ShotKind, type Species } from '../types'
 import { computeDue, DUE_STYLE, latestPerName } from '../lib/due'
 import { humanizeDueDays, shortDate, todayISO } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Segmented, Sheet } from './ui'
-import {
-  IconCheck,
-  IconClock,
-  IconExclamation,
-  IconPill,
-  IconSyringe,
-  IconTrash,
-} from './icons'
+import { UiIcon } from './UiIcon'
 
 const KIND_LABEL: Record<ShotKind, string> = { vaccine: '疫苗', deworm: '驱虫' }
 
 function KindIcon({ kind, size = 20 }: { kind: ShotKind; size?: number }) {
-  return kind === 'vaccine' ? <IconSyringe size={size} /> : <IconPill size={size} />
+  return kind === 'vaccine' ? (
+    <UiIcon name="syringe" size={size} />
+  ) : (
+    <UiIcon name="pill" size={size} />
+  )
 }
 
 /** 到期提醒：整个产品唯一的回访理由，所以放最上面 */
@@ -28,7 +25,7 @@ export function DueList({ shots }: { shots: Shot[] }) {
   if (shots.length === 0) {
     return (
       <EmptyState
-        icon={<IconSyringe size={34} />}
+        icon={<UiIcon name="syringe" size={34} />}
         title="还没有疫苗和驱虫记录"
         hint="记一次上次的日期，之后不用再自己算"
       />
@@ -39,7 +36,7 @@ export function DueList({ shots }: { shots: Shot[] }) {
     return (
       <div className="row gap-3">
         <span className="text-green">
-          <IconCheck size={22} />
+          <UiIcon name="check" size={22} />
         </span>
         <div>
           <p className="text-body text-label">最近没有要做的事</p>
@@ -61,11 +58,11 @@ export function DueList({ shots }: { shots: Shot[] }) {
             icon={
               d.status === 'overdue' ? (
                 <span className="text-red">
-                  <IconExclamation size={20} />
+                  <UiIcon name="warning" size={20} />
                 </span>
               ) : (
                 <span className="text-orange">
-                  <IconClock size={20} />
+                  <UiIcon name="clock" size={20} />
                 </span>
               )
             }
@@ -126,7 +123,7 @@ export function ShotHistory({
                 className="icon-action shrink-0 transition active:opacity-50"
                 style={{ color: 'var(--c-label-3)' }}
               >
-                <IconTrash size={19} />
+                <UiIcon name="trash" size={19} />
               </button>
             }
           />

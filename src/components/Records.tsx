@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { MedEntry, VisitEntry, WeightEntry } from '../types'
 import { shortDate, todayISO } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Sheet } from './ui'
-import { IconCross, IconPill, IconTrash } from './icons'
+import { UiIcon } from './UiIcon'
 
 function DeleteButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
@@ -13,7 +13,7 @@ function DeleteButton({ onClick, label }: { onClick: () => void; label: string }
       className="icon-action shrink-0 transition active:opacity-50"
       style={{ color: 'var(--c-label-3)' }}
     >
-      <IconTrash size={19} />
+      <UiIcon name="trash" size={19} />
     </button>
   )
 }
@@ -221,7 +221,7 @@ export function MedList({
   if (sorted.length === 0) {
     return (
       <EmptyState
-        icon={<IconPill size={34} />}
+        icon={<UiIcon name="pill" size={34} />}
         title="还没有用药记录"
         hint="吃过什么药、吃了多久，下次看病医生会问"
       />
@@ -234,7 +234,7 @@ export function MedList({
         return (
           <Row
             key={m.id}
-            icon={<IconPill />}
+            icon={<UiIcon name="pill" />}
             title={
               <>
                 {m.name}
@@ -358,7 +358,7 @@ export function VisitList({
   if (sorted.length === 0) {
     return (
       <EmptyState
-        icon={<IconCross size={34} />}
+        icon={<UiIcon name="medicalKit" size={34} />}
         title="还没有就诊记录"
         hint="把医生说的话记下来，换医院时不用凭记忆复述"
       />
@@ -372,7 +372,7 @@ export function VisitList({
             <div className="min-w-0 flex-1">
               <p className="flex items-center gap-2 text-body text-label">
                 <span className="text-blue">
-                  <IconCross size={19} />
+                  <UiIcon name="medicalKit" size={19} />
                 </span>
                 {shortDate(v.date)}
                 {v.hospital ? (

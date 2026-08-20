@@ -25,24 +25,15 @@ import {
 } from './components/Records'
 import { FeedbackBox, SurveyCard, ValidationSummary } from './components/Validation'
 import {
-  IconBubble,
-  IconChart,
-  IconCross,
-  IconDownload,
-  IconGear,
-  IconPaw,
-  IconPill,
-  IconPlus,
-  IconSyringe,
-  IconTrash,
-} from './components/icons'
+  UiIcon,
+} from './components/UiIcon'
 
 type SheetName = 'pet' | 'shot' | 'weight' | 'med' | 'visit' | 'settings' | null
 
 function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button type="button" onClick={onClick} aria-label={label} className="section-add">
-      <IconPlus size={17} />
+      <UiIcon name="plus" size={17} />
       新增
     </button>
   )
@@ -143,7 +134,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand-lockup">
           <span className="brand-mark" aria-hidden="true">
-            <IconPaw size={21} />
+            <UiIcon name="paw" size={21} />
           </span>
           <span>
             <span className="brand-name">毛毛档案</span>
@@ -158,7 +149,7 @@ export default function App() {
             aria-label="设置"
             className="icon-action"
           >
-            <IconGear size={22} />
+            <UiIcon name="settings" size={22} />
           </button>
         </div>
       </header>
@@ -176,14 +167,14 @@ export default function App() {
         <main className="page-gutter first-run">
           <section className="welcome-panel">
             <div className="welcome-symbol" aria-hidden="true">
-              <IconPaw size={42} />
+              <UiIcon name="paw" size={42} />
             </div>
             <div className="welcome-copy">
               <h1>每一次照顾，都有迹可循</h1>
               <p>疫苗、驱虫、体重、用药和就诊记录，放在一个随时找得到的地方。</p>
             </div>
             <button type="button" className="welcome-cta" onClick={() => setSheet('pet')}>
-              <IconPlus size={19} />
+              <UiIcon name="plus" size={19} />
               添加第一只宠物
             </button>
             <p className="privacy-note">无需注册 · 数据只保存在你的浏览器</p>
@@ -208,22 +199,22 @@ export default function App() {
 
           <nav className="quick-actions" aria-label="快速记录">
             <QuickAction
-              icon={<IconSyringe size={20} />}
+              icon={<UiIcon name="syringe" size={20} />}
               label="疫苗驱虫"
               onClick={() => setSheet('shot')}
             />
             <QuickAction
-              icon={<IconChart size={20} />}
+              icon={<UiIcon name="chart" size={20} />}
               label="体重"
               onClick={() => setSheet('weight')}
             />
             <QuickAction
-              icon={<IconPill size={20} />}
+              icon={<UiIcon name="pill" size={20} />}
               label="用药"
               onClick={() => setSheet('med')}
             />
             <QuickAction
-              icon={<IconCross size={20} />}
+              icon={<UiIcon name="medicalKit" size={20} />}
               label="就诊"
               onClick={() => setSheet('visit')}
             />
@@ -342,7 +333,7 @@ export default function App() {
       )}
 
       <footer className="site-footer">
-        <IconDownload size={16} />
+        <UiIcon name="download" size={16} />
         数据只存在这台设备的浏览器里，记得偶尔导出备份
       </footer>
 
@@ -375,13 +366,13 @@ export default function App() {
           >
             <div className="row-divider">
               <Row
-                icon={<IconDownload size={20} />}
+                icon={<UiIcon name="download" size={20} />}
                 title="导出备份"
                 subtitle="含所有记录与反馈"
                 onClick={() => exportData(data)}
               />
               <Row
-                icon={<IconBubble size={20} />}
+                icon={<UiIcon name="feedback" size={20} />}
                 title="当前数据量"
                 detail={`${data.pets.length} 只 · ${
                   data.shots.length + data.weights.length + data.meds.length + data.visits.length
@@ -411,7 +402,7 @@ export default function App() {
                 }
               }}
             >
-              <IconTrash size={20} />
+              <UiIcon name="trash" size={20} />
               <span className="text-body">清空所有记录</span>
             </button>
           </Group>
