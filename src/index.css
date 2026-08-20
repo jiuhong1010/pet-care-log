@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream-100 font-body text-cocoa-800 antialiased;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255, 196, 168, 0.16) 0, transparent 42%),
+      radial-gradient(circle at 88% 8%, rgba(168, 219, 197, 0.16) 0, transparent 38%),
+      radial-gradient(circle at 76% 92%, rgba(245, 175, 192, 0.14) 0, transparent 40%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* 让日期/数字输入框在移动端也维持圆润观感 */
+  input,
+  select,
+  textarea,
+  button {
+    @apply font-body;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-blob border-2 border-cream-300 bg-milk p-5 shadow-soft;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-bold text-cocoa-600;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border-2 border-cream-300 bg-cream-50 px-4 py-2.5 text-cocoa-800
+      outline-none transition placeholder:text-cocoa-400/70
+      focus:border-peach-400 focus:bg-milk focus:ring-4 focus:ring-peach-300/30;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm
+      font-extrabold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-peach-400 text-white shadow-soft hover:bg-peach-500 hover:shadow-lift;
+  }
+
+  .btn-ghost {
+    @apply btn border-2 border-cream-300 bg-milk text-cocoa-600 hover:border-peach-300 hover:text-cocoa-800;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold;
+  }
+}
+
+/* 尊重用户的减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
