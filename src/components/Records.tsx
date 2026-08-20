@@ -10,7 +10,7 @@ function DeleteButton({ onClick, label }: { onClick: () => void; label: string }
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="shrink-0 p-1 transition active:opacity-50"
+      className="icon-action shrink-0 transition active:opacity-50"
       style={{ color: 'var(--c-label-3)' }}
     >
       <IconTrash size={19} />

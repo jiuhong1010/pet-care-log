@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { SPECIES_LABEL, type Pet, type Species } from '../types'
 import { describeAge } from '../lib/date'
 import { FormRow, Group, Segmented, Sheet } from './ui'
-import { IconPlus } from './icons'
+import { IconCheck, IconClock, IconPlus } from './icons'
 
 const AVATARS = ['🐱', '🐈', '🐈‍⬛', '🐶', '🐕', '🐩', '🐰', '🐹', '🦜', '🐢']
 
@@ -19,7 +19,7 @@ export function PetSwitcher({
   onAdd: () => void
 }) {
   return (
-    <div className="flex gap-2 overflow-x-auto px-gutter pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="pet-switcher">
       {pets.map((p) => {
         const active = p.id === activeId
         return (
@@ -28,8 +28,7 @@ export function PetSwitcher({
             type="button"
             onClick={() => onSelect(p.id)}
             aria-pressed={active}
-            className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-subheadline
-              font-medium transition duration-150 ease-ios active:opacity-60
+            className={`pet-switch min-h-tap
               ${active ? 'bg-blue text-white' : 'text-label'}`}
             style={active ? undefined : { background: 'var(--c-fill-3)' }}
           >
@@ -42,8 +41,7 @@ export function PetSwitcher({
         type="button"
         onClick={onAdd}
         aria-label="添加宠物"
-        className="flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-subheadline
-          font-medium text-blue transition active:opacity-60"
+        className="pet-switch min-h-tap text-blue"
         style={{ background: 'var(--c-fill-3)' }}
       >
         <IconPlus size={16} />
@@ -52,28 +50,37 @@ export function PetSwitcher({
   )
 }
 
-/** 宠物信息卡：头像 + 名字 + 年龄 */
-export function PetHeader({ pet }: { pet: Pet }) {
+/** 当前宠物与近期照护状态 */
+export function PetHeader({ pet, dueCount }: { pet: Pet; dueCount: number }) {
   const age = describeAge(pet.birthday)
   return (
-    <Group>
-      <div className="flex items-center gap-3.5 px-gutter py-3.5">
-        <div
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-3xl"
-          style={{ background: 'var(--c-fill-3)' }}
-          aria-hidden="true"
-        >
+    <section className="pet-hero" aria-labelledby={`pet-${pet.id}`}>
+      <div className="pet-identity">
+        <div className="pet-avatar" aria-hidden="true">
           {pet.avatar}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-title3 font-semibold text-label">{pet.name}</p>
-          <p className="text-subheadline" style={{ color: 'var(--c-label-2)' }}>
+          <p className="pet-context">正在照顾</p>
+          <h1 id={`pet-${pet.id}`} className="pet-name">
+            {pet.name}
+          </h1>
+          <p className="pet-meta">
             {SPECIES_LABEL[pet.species]}
             {age ? ` · ${age}` : ''}
           </p>
         </div>
       </div>
-    </Group>
+
+      <div className={`care-status ${dueCount > 0 ? 'needs-attention' : 'all-clear'}`}>
+        <span className="care-status-icon" aria-hidden="true">
+          {dueCount > 0 ? <IconClock size={19} /> : <IconCheck size={19} />}
+        </span>
+        <span>
+          <strong>{dueCount > 0 ? `${dueCount} 件事需要留意` : '最近都安排妥了'}</strong>
+          <small>{dueCount > 0 ? '看看日期，别错过下一次' : '未来 30 天没有到期项目'}</small>
+        </span>
+      </div>
+    </section>
   )
 }
 

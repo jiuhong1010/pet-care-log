@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-20T10:42:45Z",
+  "title": "Design System: 毛毛档案",
+  "extensions": {
+    "colorMeta": {
+      "trust-indigo": {
+        "role": "primary",
+        "displayName": "可信靛蓝",
+        "canonical": "#444A92",
+        "tonalRamp": ["#202248", "#2A2C5E", "#353872", "#444A92", "#6F74AE", "#9EA2CB", "#CFD1E7", "#ECEEFA"]
+      },
+      "care-deep": {
+        "role": "primary",
+        "displayName": "照护深靛",
+        "canonical": "#2A2C5E",
+        "tonalRamp": ["#18192F", "#202248", "#2A2C5E", "#353872", "#565B91", "#8589B2", "#BCBED3", "#E7E8F0"]
+      },
+      "reassurance-green": {
+        "role": "secondary",
+        "displayName": "安心绿",
+        "canonical": "#1C7A53",
+        "tonalRamp": ["#0D3224", "#124B34", "#176343", "#1C7A53", "#4A9875", "#7AB69A", "#B1D5C4", "#EAF5F0"]
+      },
+      "attention-amber": {
+        "role": "secondary",
+        "displayName": "关注琥珀",
+        "canonical": "#A35000",
+        "tonalRamp": ["#3F2000", "#613000", "#824000", "#A35000", "#BF742F", "#D89D69", "#EDC9A6", "#FAF0E6"]
+      },
+      "urgent-red": {
+        "role": "tertiary",
+        "displayName": "紧急红",
+        "canonical": "#C9362F",
+        "tonalRamp": ["#48110E", "#711A17", "#9C2722", "#C9362F", "#DF625D", "#EB918D", "#F4C2C0", "#FBEDEC"]
+      },
+      "grouped-background": {
+        "role": "neutral",
+        "displayName": "晨雾底色",
+        "canonical": "#F6F7FA",
+        "tonalRamp": ["#242428", "#444449", "#66666D", "#8A8A92", "#AEAEB6", "#D1D1D8", "#E5E5EB", "#F7F7FA"]
+      },
+      "clean-surface": {
+        "role": "neutral",
+        "displayName": "洁净表面",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#262626", "#484848", "#6B6B6B", "#8F8F8F", "#B2B2B2", "#D2D2D2", "#E9E9E9", "#FFFFFF"]
+      },
+      "primary-ink": {
+        "role": "neutral",
+        "displayName": "主墨色",
+        "canonical": "#1C1C23",
+        "tonalRamp": ["#000000", "#242424", "#494949", "#6E6E6E", "#929292", "#B6B6B6", "#DADADA", "#F4F4F4"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "产品标题", "purpose": "产品名和顶层页面标题。" },
+      "title": { "displayName": "分区标题", "purpose": "宠物名与主要内容分区。" },
+      "body": { "displayName": "正文", "purpose": "记录、表单和说明正文。" },
+      "label": { "displayName": "控件标签", "purpose": "按钮、筛选和状态标签。" }
+    },
+    "shadows": [
+      { "name": "selection", "value": "0 1px 3px rgba(0,0,0,0.10)", "purpose": "分段控件当前项。" },
+      { "name": "dialog", "value": "0 8px 24px rgba(0,0,0,0.16)", "purpose": "桌面活动弹层。" }
+    ],
+    "motion": [
+      { "name": "ease-state", "value": "cubic-bezier(0.25, 0.1, 0.25, 1)", "purpose": "150–250ms 状态变化。" },
+      { "name": "ease-sheet", "value": "cubic-bezier(0.32, 0.72, 0, 1)", "purpose": "弹层进入与离开。" }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "当前流程最重要的动作。",
+      "html": "<button class=\"ds-btn-primary\">保存记录</button>",
+      "css": ".ds-btn-primary{min-height:44px;padding:11px 16px;border:0;border-radius:11px;background:#444A92;color:#fff;font:650 16px/22px system-ui,sans-serif;transition:filter .18s cubic-bezier(.25,.1,.25,1)}.ds-btn-primary:hover{filter:brightness(.94)}.ds-btn-primary:active{filter:brightness(.86)}.ds-btn-primary:focus-visible{outline:2px solid #444A92;outline-offset:3px}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "次级操作和低风险入口。",
+      "html": "<button class=\"ds-btn-quiet\">新增</button>",
+      "css": ".ds-btn-quiet{min-height:44px;padding:11px 16px;border:0;border-radius:11px;background:#ECECF3;color:#444A92;font:650 16px/22px system-ui,sans-serif;transition:background .18s cubic-bezier(.25,.1,.25,1)}.ds-btn-quiet:hover{background:#E2E2EC}.ds-btn-quiet:active{background:#D8D9E4}.ds-btn-quiet:focus-visible{outline:2px solid #444A92;outline-offset:3px}"
+    },
+    {
+      "name": "Selection Chip",
+      "kind": "chip",
+      "description": "宠物切换和常见项目选择。",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">小橘</button>",
+      "css": ".ds-chip{min-height:44px;padding:9px 14px;border:0;border-radius:999px;background:#444A92;color:#fff;font:600 15px/20px system-ui,sans-serif}.ds-chip:hover{filter:brightness(.94)}.ds-chip:focus-visible{outline:2px solid #444A92;outline-offset:3px}"
+    },
+    {
+      "name": "Grouped Card",
+      "kind": "card",
+      "refersTo": "card-group",
+      "description": "承载一组语义连续的记录。",
+      "html": "<section class=\"ds-card\"><strong>接下来要做的</strong><p>30 天内都不用操心</p></section>",
+      "css": ".ds-card{padding:16px;border:1px solid #DFE0E8;border-radius:14px;background:#fff;color:#1C1C23;font:400 16px/22px system-ui,sans-serif}.ds-card strong{font-weight:650}.ds-card p{margin:4px 0 0;color:#5F606E;font-size:13px;line-height:18px}"
+    },
+    {
+      "name": "Boxed Input",
+      "kind": "input",
+      "refersTo": "input-boxed",
+      "description": "弹层内的独立文字输入。",
+      "html": "<input class=\"ds-input\" placeholder=\"医院名字\" />",
+      "css": ".ds-input{width:100%;min-height:44px;padding:10px 14px;border:1px solid transparent;border-radius:11px;background:#ECECF3;color:#1C1C23;font:400 16px/22px system-ui,sans-serif}.ds-input::placeholder{color:#777886}.ds-input:focus-visible{outline:2px solid #444A92;outline-offset:2px}"
+    },
+    {
+      "name": "Due Status Row",
+      "kind": "custom",
+      "description": "把项目、日期和剩余时间组合为可扫读提醒。",
+      "html": "<div class=\"ds-due\"><span class=\"ds-due-icon\">!</span><span><strong>猫三联</strong><small>下次 9月12日</small></span><b>还有 23 天</b></div>",
+      "css": ".ds-due{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 16px;color:#1C1C23;font:400 16px/22px system-ui,sans-serif}.ds-due-icon{display:grid;place-items:center;width:24px;height:24px;border-radius:999px;background:rgba(163,80,0,.12);color:#A35000;font-weight:700}.ds-due span:nth-child(2){min-width:0;flex:1}.ds-due strong,.ds-due small{display:block}.ds-due small{color:#5F606E;font-size:13px;line-height:18px}.ds-due b{padding:3px 8px;border-radius:999px;background:rgba(163,80,0,.12);color:#824000;font-size:12px;line-height:16px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "安静的照护台",
+    "overview": "界面像家中一个随手可用、始终整洁的照护位置：重要日期放在最容易看见的地方，记录工具伸手可得，历史信息则保持安静。它应该清楚、亲近、克制，让用户感到事情已被理顺，而不是被健康提醒追着走。系统以熟悉的移动端交互为基础，但拒绝照搬 iOS 设置页。视觉身份来自稳定的信息层级、亲和的状态语言与少量有意义的色彩，不来自满屏灰白卡片、装饰性阴影或卖萌元素。",
+    "keyCharacteristics": ["任务优先、历史退后", "单手可完成的紧凑操作", "高对比、低压力的状态表达", "熟悉而不仿制系统界面", "深浅模式保持相同的信息层级"],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "可信靛蓝只服务交互和当前状态；深靛品牌块只出现在顶层身份区域，避免全页泛滥。", "section": "colors" },
+      { "name": "The Calm Alert Rule", "body": "橙色和红色必须伴随文字或图标，永远不能只靠颜色表达状态。", "section": "colors" },
+      { "name": "The Data Reads First Rule", "body": "日期、体重和状态必须使用清晰的字重与等宽数字；产品名不能抢走任务信息的注意力。", "section": "typography" },
+      { "name": "The Flat-by-Default Rule", "body": "表面在静止时保持平坦；如果所有卡片都浮起来，信息层级已经失败。", "section": "elevation" }
+    ],
+    "dos": ["Do 先展示“现在需要做什么”，再展示完整历史。", "Do 保持主要点击目标至少 44×44px，并为键盘用户提供可见焦点。", "Do 用可信靛蓝作为唯一交互主色，并将深靛品牌块限制在顶层身份区域。", "Do 用文字、图标和颜色共同表达逾期、近期和完成状态。", "Do 在浅色与深色模式中保持相同的信息顺序和对比关系。"],
+    "donts": ["Don't “照搬 iOS 设置页”，也不要使用满屏灰白分组卡片和系统控件仿制作为视觉身份。", "Don't 做“幼稚、玩具化或过度卡通的宠物 App”，不要依赖大量 emoji 营造可爱。", "Don't 做“冷硬的医院后台、密集表格或让用户产生压力的警报墙”。", "Don't 使用“玻璃拟态、渐变文字、巨大圆角、同质卡片网格和无意义装饰”。", "Don't 在卡片上同时使用 1px 边框和大于 8px 模糊的装饰性投影。", "Don't 用颜色作为唯一状态信号，或把正文降到 WCAG AA 以下的对比度。"]
+  }
+}

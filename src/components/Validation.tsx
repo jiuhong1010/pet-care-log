@@ -26,7 +26,7 @@ export function SurveyCard({
   }
 
   return (
-    <Group header="用之前，想先问一句" footer="只存在你本地，随时可跳过">
+    <Group className="survey-card" header="用之前，想先问一句" footer="只存在你本地，随时可跳过">
       <div className="px-gutter py-3.5">
         <p className="text-body text-label">
           在遇到这个页面之前，你是怎么记宠物的疫苗和驱虫的？
@@ -38,7 +38,7 @@ export function SurveyCard({
               key={o}
               type="button"
               onClick={() => pick(o)}
-              className="rounded-full px-3 py-1.5 text-subheadline font-medium text-blue
+              className="min-h-tap rounded-full px-3 py-2 text-subheadline font-medium text-blue
                 transition duration-150 ease-ios active:opacity-60"
               style={{ background: 'var(--c-fill-3)' }}
             >
@@ -47,7 +47,7 @@ export function SurveyCard({
           ))}
         </div>
 
-        <div className="mt-3 flex gap-2">
+        <div className="survey-answer-row">
           <input
             className="field-boxed flex-1"
             value={other}
@@ -93,7 +93,7 @@ export function FeedbackBox({ onSubmit }: { onSubmit: (text: string) => void }) 
   }
 
   return (
-    <div className="px-gutter py-3">
+    <div className="feedback-box">
       <textarea
         className="field-boxed min-h-[76px] resize-y"
         value={text}

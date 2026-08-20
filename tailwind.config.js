@@ -92,11 +92,9 @@ export default {
       },
 
       borderRadius: {
-        // inset grouped 卡片的默认圆角是 10pt（社区测量，iOS 26 起系统默认为 26）
-        card: '10px',
-        // 控件与弹层
+        card: '14px',
         control: '12px',
-        sheet: '14px',
+        sheet: '16px',
       },
 
       spacing: {

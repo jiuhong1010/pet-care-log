@@ -123,7 +123,7 @@ export function ShotHistory({
                 type="button"
                 onClick={() => onDelete(s.id)}
                 aria-label={`删除 ${s.name}`}
-                className="shrink-0 p-1 transition active:opacity-50"
+                className="icon-action shrink-0 transition active:opacity-50"
                 style={{ color: 'var(--c-label-3)' }}
               >
                 <IconTrash size={19} />
@@ -210,7 +210,7 @@ export function ShotFormSheet({
                       setName(p.name)
                       setIntervalDays(p.intervalDays)
                     }}
-                    className={`rounded-full px-3 py-1.5 text-subheadline font-medium
+                    className={`min-h-tap rounded-full px-3 py-2 text-subheadline font-medium
                       transition duration-150 ease-ios active:opacity-60
                       ${active ? 'bg-blue text-white' : 'text-blue'}`}
                     style={active ? undefined : { background: 'var(--c-fill-3)' }}

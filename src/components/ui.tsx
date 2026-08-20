@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { IconXmark } from './icons'
 
 /** inset grouped 分组：标题 + 卡片 */
@@ -167,6 +167,32 @@ export function Sheet({
   submitDisabled?: boolean
   children: ReactNode
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
+  useEffect(() => {
+    if (!open) return
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCloseRef.current()
+    }
+    document.addEventListener('keydown', onKeyDown)
+
+    window.requestAnimationFrame(() => {
+      if (document.activeElement === document.body) dialogRef.current?.focus()
+    })
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      previousFocus?.focus()
+    }
+  }, [open])
+
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
@@ -174,19 +200,17 @@ export function Sheet({
         type="button"
         aria-label="关闭"
         onClick={onClose}
-        className="absolute inset-0 animate-fade-in bg-black/25 backdrop-blur-sm"
+        className="sheet-backdrop"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative flex max-h-[90vh] w-full max-w-lg animate-sheet-up flex-col
-          overflow-hidden rounded-t-sheet bg-bg-grouped sm:rounded-sheet"
+        tabIndex={-1}
+        className="sheet-panel"
       >
-        <div
-          className="flex items-center justify-between gap-2 px-2 py-2.5"
-          style={{ borderBottom: '0.5px solid var(--c-separator)' }}
-        >
+        <div className="sheet-header">
           <button type="button" onClick={onClose} className="btn-plain">
             取消
           </button>
@@ -206,7 +230,7 @@ export function Sheet({
             </button>
           )}
         </div>
-        <div className="overflow-y-auto px-2 pb-6 pt-1">{children}</div>
+        <div className="sheet-content">{children}</div>
       </div>
     </div>
   )
@@ -224,7 +248,7 @@ export function Segmented<T extends string>({
 }) {
   return (
     <div
-      className="flex gap-0.5 rounded-[9px] p-0.5"
+      className="flex gap-1 rounded-control p-1"
       style={{ background: 'var(--c-fill-3)' }}
       role="tablist"
     >
@@ -237,7 +261,7 @@ export function Segmented<T extends string>({
             role="tab"
             aria-selected={active}
             onClick={() => onChange(o.value)}
-            className={`flex-1 rounded-[7px] py-1.5 text-subheadline font-medium transition duration-150 ease-ios
+            className={`min-h-tap flex-1 rounded-[8px] px-3 py-2 text-subheadline font-medium transition duration-150 ease-ios
               ${active ? 'bg-bg-card text-label shadow-sm' : 'text-label'}`}
             style={active ? undefined : { color: 'var(--c-label-2)' }}
           >
