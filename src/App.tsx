@@ -12,7 +12,6 @@ import type {
   Pet,
   Shot,
   Species,
-  SurveyAnswer,
   VisitEntry,
   WeightEntry,
 } from './types'
@@ -28,10 +27,10 @@ import {
   WeightFormSheet,
   WeightList,
 } from './components/Records'
-import { FeedbackBox, SurveyCard, ValidationSummary } from './components/Validation'
 import { UiIcon } from './components/UiIcon'
 import careMascot from './assets/generated/care-mascot.png'
 import { AppNavigation, type WorkspaceView } from './components/AppNavigation'
+import { TodayCareScene } from './components/TodayCareScene'
 import {
   FeatureIllustration,
   type FeatureIllustrationName,
@@ -114,7 +113,6 @@ export default function App() {
   const [activePetId, setActivePetId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<SheetName>(null)
   const [view, setView] = useState<WorkspaceView>('today')
-  const [surveySkipped, setSurveySkipped] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
   const activePet: Pet | null = useMemo(() => {
@@ -294,9 +292,6 @@ export default function App() {
     flash(`${med.name} 已记为完成 · ${log.caregiver}`)
   }
 
-  const showSurvey = !data.survey && !surveySkipped
-  const answerSurvey = (answer: SurveyAnswer) => update((prev) => ({ ...prev, survey: answer }))
-
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -333,7 +328,6 @@ export default function App() {
               <div><span>03</span><strong>回来继续照顾</strong><small>医嘱和用药接上</small></div>
             </div>
           </section>
-          {showSurvey ? <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} /> : null}
         </main>
       ) : (
         <main className={`page-gutter dashboard dashboard-view-${view}`}>
@@ -344,38 +338,17 @@ export default function App() {
           <div className="workspace-content">
             {view === 'today' ? (
               <div className="today-view">
-                <section className="care-stage" aria-labelledby="today-heading">
-                  <div className="care-stage-copy">
-                    <p className="page-context">今天 · 正在照顾 {activePet.name}</p>
-                    <h2 id="today-heading">先把刚刚发生的事留住</h2>
-                    <p>不用判断病因，也不用每天打卡。记下事实和时间，后面的时间线与看诊包会自动接上。</p>
-                    <button type="button" className="primary-care-action" onClick={() => setSheet('event')}>
-                      <span><strong>记下刚刚的变化</strong><small>食欲、精神、排便或其他</small></span>
-                      <UiIcon name="arrowRight" size={19} />
-                    </button>
-                  </div>
-                  <div className="care-stage-art" aria-hidden="true">
-                    <FeatureIllustration name="observation" eager />
-                  </div>
-                </section>
-
-                <section className="care-journey" aria-labelledby="journey-heading">
-                  <div className="care-journey-heading">
-                    <h2 id="journey-heading">从发现变化，到把话说清楚</h2>
-                    <p>这条链路就是毛毛档案和普通打卡产品不同的地方。</p>
-                  </div>
-                  <div className="care-journey-steps">
-                    <button type="button" onClick={() => setSheet('event')}>
-                      <span>1</span><strong>留下事实</strong><small>{observations.length ? `已有 ${observations.length} 条观察` : '从一条变化开始'}</small>
-                    </button>
-                    <button type="button" onClick={() => setView('timeline')}>
-                      <span>2</span><strong>串成时间线</strong><small>{activeHealthEvent ? '正在连续观察' : '按事件自动归档'}</small>
-                    </button>
-                    <button type="button" onClick={() => setView('pack')}>
-                      <span>3</span><strong>生成看诊包</strong><small>体重、用药和问题一起带上</small>
-                    </button>
-                  </div>
-                </section>
+                <TodayCareScene
+                  pet={activePet}
+                  observations={observations}
+                  meds={meds}
+                  medicationLogs={medicationLogs}
+                  dues={activeDue}
+                  onRecord={() => setSheet('event')}
+                  onMedication={() => setSheet('med')}
+                  onShot={() => setSheet('shot')}
+                  onPack={() => setView('pack')}
+                />
 
                 <div className="today-detail-grid">
                   <section className="record-block priority-block">
@@ -450,10 +423,15 @@ export default function App() {
                   {shots.length > 0 ? <section className="record-block records-shot-history"><GroupHeaderRow title="疫苗与驱虫历史" /><div className="group-card"><ShotHistory shots={shots} onDelete={(id) => update((prev) => ({ ...prev, shots: prev.shots.filter((s) => s.id !== id) }))} /></div></section> : null}
                 </div>
 
-                <section className="feedback-strip"><div className="feedback-intro"><h2>用起来哪里还不顺手？</h2><p>你的想法只保存在本地，导出备份时会一起带上。</p></div><FeedbackBox onSubmit={(text) => update((prev) => ({ ...prev, feedbacks: [...prev.feedbacks, { id: newId(), text, createdAt: new Date().toISOString() }] }))} /></section>
               </div>
             ) : null}
           </div>
+          {view === 'today' ? (
+            <button type="button" className="mobile-record-action" onClick={() => setSheet('event')}>
+              <UiIcon name="edit" size={21} />
+              记下刚刚的变化
+            </button>
+          ) : null}
         </main>
       )}
 
@@ -469,11 +447,9 @@ export default function App() {
 
       <Sheet open={sheet === 'settings'} title="设置" onClose={() => setSheet(null)}>
         <div className="settings-stack">
-          {showSurvey ? <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} /> : null}
-          {data.survey || data.feedbacks.length > 0 ? <Group header="你的反馈"><ValidationSummary survey={data.survey} feedbacks={data.feedbacks} /></Group> : null}
           <Group header="照护人" footer="只用于记录“谁在什么时候完成了用药”，不会同步给别人。"><FormRow label="名字" stacked><input className="field-boxed" value={data.caregiverName} maxLength={24} onChange={(event) => update((prev) => ({ ...prev, caregiverName: event.target.value }))} placeholder="比如：小满妈妈" /></FormRow></Group>
-          <Group header="数据" footer="全部在你这台设备的浏览器本地，没有服务器、没有账号。换设备或清缓存会丢，建议导出备份。"><div className="row-divider"><Row icon={<UiIcon name="download" size={20} />} title="导出备份" subtitle="含所有结构化记录与反馈" onClick={() => exportData(data)} /><Row icon={<UiIcon name="feedback" size={20} />} title="当前数据量" detail={`${data.pets.length} 只 · ${formatCount(data)} 条`} /></div></Group>
-          <Group><button type="button" className="row w-full text-red transition active:opacity-50" onClick={() => { if (!window.confirm('清空所有记录？无法撤销，建议先导出备份。')) return; update((prev) => ({ ...prev, version: 2, pets: [], shots: [], weights: [], meds: [], visits: [], healthEvents: [], observations: [], attachments: [], medicationLogs: [] })); setActivePetId(null); setSheet(null) }}><UiIcon name="trash" size={20} /><span className="text-body">清空所有记录</span></button></Group>
+          <Group header="数据" footer="全部在你这台设备的浏览器本地，没有服务器、没有账号。换设备或清缓存会丢，建议导出备份。"><div className="row-divider"><Row icon={<UiIcon name="download" size={20} />} title="导出备份" subtitle="包含全部结构化照护记录" onClick={() => exportData(data)} /><Row icon={<UiIcon name="chart" size={20} />} title="当前数据量" detail={`${data.pets.length} 只 · ${formatCount(data)} 条`} /></div></Group>
+          <Group><button type="button" className="row w-full text-red transition active:opacity-50" onClick={() => { if (!window.confirm('清空所有记录？无法撤销，建议先导出备份。')) return; update((prev) => ({ ...prev, version: 2, pets: [], shots: [], weights: [], meds: [], visits: [], healthEvents: [], observations: [], attachments: [], medicationLogs: [], survey: null, feedbacks: [] })); setActivePetId(null); setSheet(null) }}><UiIcon name="trash" size={20} /><span className="text-body">清空所有记录</span></button></Group>
         </div>
       </Sheet>
     </div>

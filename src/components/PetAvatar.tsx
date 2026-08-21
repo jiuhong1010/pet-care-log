@@ -1,13 +1,13 @@
-import blackCat from '../assets/generated/pet-avatars-v3/black-cat.png'
-import goldenRetriever from '../assets/generated/pet-avatars-v3/golden-retriever.png'
-import greenParrot from '../assets/generated/pet-avatars-v3/green-parrot.png'
-import hamster from '../assets/generated/pet-avatars-v3/hamster.png'
-import lopRabbit from '../assets/generated/pet-avatars-v3/lop-rabbit.png'
-import orangeCat from '../assets/generated/pet-avatars-v3/orange-cat.png'
-import shibaInu from '../assets/generated/pet-avatars-v3/shiba-inu.png'
-import silverCat from '../assets/generated/pet-avatars-v3/silver-cat.png'
-import turtle from '../assets/generated/pet-avatars-v3/turtle.png'
-import whitePoodle from '../assets/generated/pet-avatars-v3/white-poodle.png'
+import blackCat from '../assets/generated/pet-avatars-v4/black-cat.png'
+import goldenRetriever from '../assets/generated/pet-avatars-v4/golden-retriever.png'
+import greenParrot from '../assets/generated/pet-avatars-v4/green-parrot.png'
+import hamster from '../assets/generated/pet-avatars-v4/hamster.png'
+import lopRabbit from '../assets/generated/pet-avatars-v4/lop-rabbit.png'
+import orangeCat from '../assets/generated/pet-avatars-v4/orange-cat.png'
+import shibaInu from '../assets/generated/pet-avatars-v4/shiba-inu.png'
+import silverCat from '../assets/generated/pet-avatars-v4/silver-cat.png'
+import turtle from '../assets/generated/pet-avatars-v4/turtle.png'
+import whitePoodle from '../assets/generated/pet-avatars-v4/white-poodle.png'
 
 export const PET_AVATAR_OPTIONS = [
   { value: '🐱', label: '橘猫', image: orangeCat },

@@ -160,7 +160,7 @@ export function PetFormSheet({
         </Group>
 
         <Group header="头像">
-          <div className="flex flex-wrap gap-2 px-gutter py-3">
+          <div className="avatar-picker-grid px-gutter py-3">
             {PET_AVATAR_OPTIONS.map((option) => (
               <button
                 key={option.value}
