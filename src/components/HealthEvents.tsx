@@ -12,6 +12,7 @@ import type {
 import { isoFromLocalDateTime, localDateTimeInputValue, shortDateTime } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Segmented, Sheet } from './ui'
 import { UiIcon } from './UiIcon'
+import { FeatureIllustration, type FeatureIllustrationName } from './FeatureIllustration'
 
 export const OBSERVATION_LABELS: Record<HealthObservationKind, string> = {
   appetite: '食欲',
@@ -22,17 +23,6 @@ export const OBSERVATION_LABELS: Record<HealthObservationKind, string> = {
   breathing: '呼吸',
   pain: '疼痛',
   custom: '其他变化',
-}
-
-const OBSERVATION_ICONS: Record<HealthObservationKind, 'paw' | 'pill' | 'warning' | 'medicalKit'> = {
-  appetite: 'paw',
-  energy: 'paw',
-  vomiting: 'warning',
-  stool: 'medicalKit',
-  urination: 'medicalKit',
-  breathing: 'medicalKit',
-  pain: 'warning',
-  custom: 'paw',
 }
 
 const SEVERITY_LABELS: Record<HealthObservationSeverity, string> = {
@@ -138,11 +128,12 @@ export function HealthEventComposerSheet({
         {activeEvent ? (
           <Group header="放进哪一段照护轨迹？" footer="短时间内的变化会自动收进同一件事，减少重复分类。">
             <div className="px-gutter py-3">
+              <p className="active-event-reference">当前：{activeEvent.title}</p>
               <Segmented
                 value={eventMode}
                 onChange={setEventMode}
                 options={[
-                  { value: 'continue' as const, label: `继续「${activeEvent.title}」` },
+                  { value: 'continue' as const, label: '继续这次观察' },
                   { value: 'new' as const, label: '开始新的一段' },
                 ]}
               />
@@ -177,9 +168,7 @@ export function HealthEventComposerSheet({
                   aria-pressed={active}
                   onClick={() => setKind(option)}
                 >
-                  <span className="observation-kind-icon">
-                    <UiIcon name={OBSERVATION_ICONS[option]} size={18} />
-                  </span>
+                  <span className="observation-kind-mark" aria-hidden="true" />
                   <span>{OBSERVATION_LABELS[option]}</span>
                 </button>
               )
@@ -195,7 +184,7 @@ export function HealthEventComposerSheet({
                 onChange={setSeverity}
                 options={(Object.keys(SEVERITY_LABELS) as HealthObservationSeverity[]).map((value) => ({
                   value,
-                  label: SEVERITY_LABELS[value],
+                  label: value === 'severe' ? '尽快处理' : SEVERITY_LABELS[value],
                 }))}
               />
             </FormRow>
@@ -300,7 +289,7 @@ export function CareTimeline({
           <span className="timeline-spark" aria-hidden="true" />
         </div>
         <div className="timeline-empty-body">
-          <span className="timeline-empty-node"><UiIcon name="paw" size={18} /></span>
+          <span className="timeline-empty-node"><FeatureIllustration name="observation" /></span>
           <div>
             <p>不用每天打卡。</p>
             <p className="muted-copy">等到你发现一点不同，再把当时的事实收进来。</p>
@@ -410,7 +399,7 @@ export function VisitPackSummary({
     return (
       <section className="visit-pack-card is-quiet" aria-labelledby="visit-pack-heading">
         <div className="visit-pack-header">
-          <div className="visit-pack-icon"><UiIcon name="medicalKit" size={21} /></div>
+          <div className="visit-pack-icon"><FeatureIllustration name="visitPack" /></div>
           <div className="min-w-0">
             <p className="eyebrow">看诊包</p>
             <h2 id="visit-pack-heading">观察随时记，看诊时不遗漏</h2>
@@ -427,7 +416,7 @@ export function VisitPackSummary({
   return (
     <section className="visit-pack-card" aria-labelledby="visit-pack-heading">
       <div className="visit-pack-header">
-        <div className="visit-pack-icon"><UiIcon name="medicalKit" size={21} /></div>
+        <div className="visit-pack-icon"><FeatureIllustration name="visitPack" /></div>
         <div className="min-w-0 flex-1">
           <p className="eyebrow">看诊包</p>
           <h2 id="visit-pack-heading">{event.title}</h2>
@@ -510,11 +499,16 @@ export function RecordMenuSheet({
   onClose: () => void
   onChoose: (action: 'shot' | 'weight' | 'med' | 'visit') => void
 }) {
-  const options = [
-    { value: 'shot' as const, icon: <UiIcon name="syringe" size={21} />, title: '疫苗和驱虫', subtitle: '记下日期，自动算下一次' },
-    { value: 'weight' as const, icon: <UiIcon name="chart" size={21} />, title: '体重', subtitle: '留下一次新的变化参照' },
-    { value: 'med' as const, icon: <UiIcon name="pill" size={21} />, title: '用药', subtitle: '药名、用法和照护接力' },
-    { value: 'visit' as const, icon: <UiIcon name="medicalKit" size={21} />, title: '就诊记录', subtitle: '把医生说的话留下来' },
+  const options: {
+    value: 'shot' | 'weight' | 'med' | 'visit'
+    illustration: FeatureIllustrationName
+    title: string
+    subtitle: string
+  }[] = [
+    { value: 'shot', illustration: 'vaccine', title: '疫苗和驱虫', subtitle: '记下日期，自动算下一次' },
+    { value: 'weight', illustration: 'weight', title: '体重', subtitle: '留下一次新的变化参照' },
+    { value: 'med', illustration: 'medication', title: '用药', subtitle: '药名、用法和照护接力' },
+    { value: 'visit', illustration: 'visit', title: '就诊记录', subtitle: '把医生说的话留下来' },
   ]
   return (
     <Sheet open={open} title="记录其他照护" onClose={onClose}>
@@ -523,7 +517,7 @@ export function RecordMenuSheet({
           {options.map((option) => (
             <Row
               key={option.value}
-              icon={option.icon}
+              icon={<span className="record-menu-illustration"><FeatureIllustration name={option.illustration} /></span>}
               title={option.title}
               subtitle={option.subtitle}
               trailing={<UiIcon name="chevronRight" size={18} />}
@@ -553,7 +547,7 @@ export function MedicationRelay({
 }) {
   const current = meds.filter((med) => !med.endDate)
   if (!current.length) {
-    return <EmptyState icon={<UiIcon name="pill" size={34} />} title="还没有正在使用的药" hint="把药名和用法留下，下次照护就不用再猜。" />
+    return <EmptyState icon={<span className="empty-illustration"><FeatureIllustration name="medication" /></span>} title="还没有正在使用的药" hint="把药名和用法留下，下次照护就不用再猜。" />
   }
   return (
     <div className="med-relay-list">
@@ -561,7 +555,7 @@ export function MedicationRelay({
         const last = logs.filter((log) => log.medId === med.id && log.status === 'completed').sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0]
         return (
           <div className="med-relay-row" key={med.id}>
-            <div className="med-relay-icon"><UiIcon name="pill" size={19} /></div>
+            <div className="med-relay-icon"><FeatureIllustration name="medication" /></div>
             <div className="min-w-0 flex-1">
               <div className="med-relay-title"><strong>{med.name}</strong><span className="badge badge-mint">在用</span></div>
               <p>{med.dosage || '用法还没记'} · {last ? `上次 ${shortDateTime(last.completedAt)} · ${last.caregiver}` : '还没有今天的完成记录'}</p>

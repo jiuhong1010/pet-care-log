@@ -32,7 +32,7 @@ export function PetSwitcher({
             style={active ? undefined : { background: 'var(--c-fill-3)' }}
           >
             <PetAvatar avatar={p.avatar} className="pet-switch-avatar" decorative />
-            {p.name}
+            <span className="pet-switch-name">{p.name}</span>
           </button>
         )
       })}

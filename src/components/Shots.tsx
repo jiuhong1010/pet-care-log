@@ -4,14 +4,13 @@ import { computeDue, DUE_STYLE, latestPerName } from '../lib/due'
 import { humanizeDueDays, shortDate, todayISO } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Segmented, Sheet } from './ui'
 import { UiIcon } from './UiIcon'
-
-const KIND_LABEL: Record<ShotKind, string> = { vaccine: '疫苗', deworm: '驱虫' }
+import { FeatureIllustration } from './FeatureIllustration'
 
 function KindIcon({ kind, size = 20 }: { kind: ShotKind; size?: number }) {
-  return kind === 'vaccine' ? (
-    <UiIcon name="syringe" size={size} />
-  ) : (
-    <UiIcon name="pill" size={size} />
+  return (
+    <span className="kind-illustration" style={{ width: size + 18, height: size + 18 }}>
+      <FeatureIllustration name={kind === 'vaccine' ? 'vaccine' : 'medication'} />
+    </span>
   )
 }
 
@@ -25,7 +24,7 @@ export function DueList({ shots }: { shots: Shot[] }) {
   if (shots.length === 0) {
     return (
       <EmptyState
-        icon={<UiIcon name="syringe" size={34} />}
+        icon={<span className="empty-illustration"><FeatureIllustration name="vaccine" /></span>}
         title="还没有疫苗和驱虫记录"
         hint="记一次上次的日期，之后不用再自己算"
       />
@@ -100,14 +99,7 @@ export function ShotHistory({
           <Row
             key={s.id}
             icon={<KindIcon kind={s.kind} />}
-            title={
-              <>
-                {s.name}
-                <span className="ml-2 text-footnote" style={{ color: 'var(--c-label-3)' }}>
-                  {KIND_LABEL[s.kind]}
-                </span>
-              </>
-            }
+            title={s.name}
             subtitle={
               <>
                 {shortDate(s.date)}

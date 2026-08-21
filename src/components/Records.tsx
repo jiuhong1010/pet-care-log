@@ -3,6 +3,7 @@ import type { MedEntry, MedicationLog, VisitEntry, WeightEntry } from '../types'
 import { shortDate, shortDateTime, todayISO } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Sheet } from './ui'
 import { UiIcon } from './UiIcon'
+import { FeatureIllustration } from './FeatureIllustration'
 
 function DeleteButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
@@ -227,7 +228,7 @@ export function MedList({
   if (sorted.length === 0) {
     return (
       <EmptyState
-        icon={<UiIcon name="pill" size={34} />}
+        icon={<span className="empty-illustration"><FeatureIllustration name="medication" /></span>}
         title="还没有用药记录"
         hint="吃过什么药、吃了多久，下次看病医生会问"
       />
@@ -243,7 +244,7 @@ export function MedList({
         return (
           <Row
             key={m.id}
-            icon={<UiIcon name="pill" />}
+            icon={<span className="record-row-illustration"><FeatureIllustration name="medication" /></span>}
             title={
               <>
                 {m.name}
@@ -381,7 +382,7 @@ export function VisitList({
   if (sorted.length === 0) {
     return (
       <EmptyState
-        icon={<UiIcon name="medicalKit" size={34} />}
+        icon={<span className="empty-illustration"><FeatureIllustration name="visit" /></span>}
         title="还没有就诊记录"
         hint="把医生说的话记下来，换医院时不用凭记忆复述"
       />
@@ -394,9 +395,7 @@ export function VisitList({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="flex items-center gap-2 text-body text-label">
-                <span className="text-blue">
-                  <UiIcon name="medicalKit" size={19} />
-                </span>
+                <span className="record-row-illustration"><FeatureIllustration name="visit" /></span>
                 {shortDate(v.date)}
                 {v.hospital ? (
                   <span style={{ color: 'var(--c-label-2)' }}>{v.hospital}</span>

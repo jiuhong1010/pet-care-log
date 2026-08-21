@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { axisDate } from '../lib/date'
 import type { WeightEntry } from '../types'
 import { EmptyState } from './ui'
-import { UiIcon } from './UiIcon'
+import { FeatureIllustration } from './FeatureIllustration'
 
 /**
  * 手写体重折线图。不引图表库：只需要一条线加圆点，
@@ -18,7 +18,7 @@ export function WeightChart({ entries }: { entries: WeightEntry[] }) {
   if (sorted.length === 0) {
     return (
       <EmptyState
-        icon={<UiIcon name="chart" size={34} weight="regular" />}
+        icon={<span className="empty-illustration"><FeatureIllustration name="weight" /></span>}
         title="还没有体重记录"
         hint="记两次以上就能看出趋势"
       />

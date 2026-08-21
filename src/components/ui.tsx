@@ -54,7 +54,7 @@ export function Row({
         ) : null}
       </span>
       {detail ? (
-        <span className="shrink-0 text-body" style={{ color: 'var(--c-label-2)' }}>
+        <span className="min-w-0 max-w-[45%] truncate text-right text-body" style={{ color: 'var(--c-label-2)' }}>
           {detail}
         </span>
       ) : null}
@@ -214,7 +214,7 @@ export function Sheet({
           <button type="button" onClick={onClose} className="btn-plain">
             取消
           </button>
-          <span className="text-headline font-semibold text-label">{title}</span>
+          <span className="sheet-title text-headline font-semibold text-label">{title}</span>
           {onSubmit ? (
             <button
               type="button"
@@ -248,7 +248,7 @@ export function Segmented<T extends string>({
 }) {
   return (
     <div
-      className="flex gap-1 rounded-control p-1"
+      className="segmented-control flex gap-1 rounded-control p-1"
       style={{ background: 'var(--c-fill-3)' }}
       role="tablist"
     >
@@ -261,7 +261,7 @@ export function Segmented<T extends string>({
             role="tab"
             aria-selected={active}
             onClick={() => onChange(o.value)}
-            className={`min-h-tap flex-1 rounded-[8px] px-3 py-2 text-subheadline font-medium transition duration-150 ease-ios
+            className={`segmented-option min-h-tap min-w-0 flex-1 rounded-[8px] px-3 py-2 text-subheadline font-medium transition duration-150 ease-ios
               ${active ? 'bg-bg-card text-label shadow-sm' : 'text-label'}`}
             style={active ? undefined : { color: 'var(--c-label-2)' }}
           >
