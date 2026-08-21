@@ -2,12 +2,15 @@
 name: 毛毛档案
 description: 温暖、可靠、轻松的宠物健康记录工具
 colors:
-  trust-indigo: "#444A92"
-  care-deep: "#2A2C5E"
-  reassurance-green: "#1C7A53"
-  attention-amber: "#A35000"
-  urgent-red: "#C9362F"
-  grouped-background: "#F6F7FA"
+  care-teal: "#1A7580"
+  care-deep: "#0E4A56"
+  sea-glass: "#DDF5F0"
+  sky-wash: "#E1F3F7"
+  sun-node: "#F9D361"
+  reassurance-green: "#1D7E5D"
+  attention-amber: "#B86711"
+  urgent-red: "#B73E35"
+  grouped-background: "#F7FBFA"
   clean-surface: "#FFFFFF"
   primary-ink: "#1C1C23"
   secondary-ink: "#5F606E"
@@ -48,14 +51,14 @@ spacing:
   tap: "44px"
 components:
   button-primary:
-    backgroundColor: "{colors.trust-indigo}"
+    backgroundColor: "{colors.care-teal}"
     textColor: "{colors.clean-surface}"
     rounded: "{rounded.control}"
     padding: "11px 16px"
     height: "44px"
   button-quiet:
     backgroundColor: "{colors.quiet-fill}"
-    textColor: "{colors.trust-indigo}"
+    textColor: "{colors.care-teal}"
     rounded: "{rounded.control}"
     padding: "11px 16px"
     height: "44px"
@@ -91,11 +94,11 @@ components:
 
 ## 2. Colors
 
-可信靛蓝负责交互，深靛色建立品牌锚点，安心绿负责完成与稳定状态，琥珀与红色只在真正需要注意时出现；中性色承担绝大多数表面。
+海玻璃青负责主动作和照护路径，深青色建立可信锚点，日光黄只标记下一件要做的事，安心绿负责完成与稳定状态，橙红只在真正需要行动时出现；云白和白色承担绝大多数表面。
 
 ### Primary
 
-- **可信靛蓝**：主操作、当前选择、链接与焦点，不用于大面积装饰。
+- **海玻璃青**：主操作、当前选择、链接与焦点，不用于大面积装饰。
 - **照护深靛**：欢迎区和宠物状态区的稳定背景，用来形成产品识别。
 
 ### Secondary
@@ -188,9 +191,13 @@ components:
 
 宠物头像是身份内容而非界面 glyph，使用十张独立透明 PNG。每张素材采用相同的 256×256 画布、210px 主体视觉高度和统一底部基线，从资产层消除串格、裁剪差异与上下跳动。界面统一套用约 5:6 的竖向圆角框：主状态区采用 90×108px（桌面 100×120px），切换器使用 28×34px 缩略图，选择器使用 74×88px 预览；所有选择项始终显示同样的边框，选中态仅改变边框颜色。已有数据仍保存原 emoji 值，仅在显示层映射为独立肖像，保证旧记录和备份兼容。
 
-### Care Hero & Quick Actions
+### Care Hero, Timeline & Visit Pack
 
-深靛状态区集中展示当前宠物、身份和 30 天照护状态；下方四等分快捷工具栏固定承载疫苗驱虫、体重、用药与就诊入口。两者共同构成“照护台”的操作锚点，桌面双栏、手机单列，但信息顺序不变。
+当前宠物和 30 天照护状态先出现，但不再用整块深色抢走首屏。下方只有一个主动作「记下刚刚的变化」，把食欲、精神、呕吐、排便、排尿、呼吸、疼痛和自定义观察接入照护事件。时间线用一条克制的弯曲路径连接节点，看诊包默认收起，展开后按「发生了什么、现在怎样、正在使用什么、想问什么」组织资料。疫苗、体重、用药和就诊进入明确的「记录其他照护」菜单，避免四个等权按钮。
+
+### Care mascot
+
+首次使用页使用 `src/assets/generated/care-mascot.png`：透明背景、橘猫与薄荷色看诊包，作为产品叙事资产而不是按钮或图标。功能性 glyph 继续统一从 `UiIcon` 调用，用户宠物头像仍使用十张独立透明肖像，避免圆形裁剪损失细节。
 
 ### Due Status Row
 

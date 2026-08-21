@@ -1,9 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useAppData } from './hooks/useAppData'
 import { newId, exportData } from './lib/storage'
+import { saveAttachment } from './lib/media'
 import { upcomingDues } from './lib/due'
 import type {
+  AttachmentMeta,
+  HealthEvent,
+  HealthObservation,
   MedEntry,
+  MedicationLog,
   Pet,
   Shot,
   Species,
@@ -11,7 +16,7 @@ import type {
   VisitEntry,
   WeightEntry,
 } from './types'
-import { Group, Row, Sheet } from './components/ui'
+import { FormRow, Group, Row, Sheet } from './components/ui'
 import { PetFormSheet, PetHeader, PetSwitcher } from './components/Pet'
 import { DueList, ShotFormSheet, ShotHistory } from './components/Shots'
 import { WeightChart } from './components/WeightChart'
@@ -24,12 +29,18 @@ import {
   WeightList,
 } from './components/Records'
 import { FeedbackBox, SurveyCard, ValidationSummary } from './components/Validation'
+import { UiIcon } from './components/UiIcon'
+import careMascot from './assets/generated/care-mascot.png'
 import {
-  UiIcon,
-} from './components/UiIcon'
-import { PetAvatar } from './components/PetAvatar'
+  CareTimeline,
+  HealthEventComposerSheet,
+  MedicationRelay,
+  RecordMenuSheet,
+  VisitPackSummary,
+  type ObservationDraft,
+} from './components/HealthEvents'
 
-type SheetName = 'pet' | 'shot' | 'weight' | 'med' | 'visit' | 'settings' | null
+type SheetName = 'pet' | 'shot' | 'weight' | 'med' | 'visit' | 'settings' | 'event' | 'record-menu' | null
 
 function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
@@ -40,7 +51,7 @@ function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
   )
 }
 
-function GroupHeaderRow({ title, action }: { title: string; action?: React.ReactNode }) {
+function GroupHeaderRow({ title, action }: { title: string; action?: ReactNode }) {
   return (
     <div className="section-heading">
       <h2>{title}</h2>
@@ -49,20 +60,21 @@ function GroupHeaderRow({ title, action }: { title: string; action?: React.React
   )
 }
 
-function QuickAction({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode
-  label: string
-  onClick: () => void
+function formatCount(data: {
+  shots: Shot[]
+  weights: WeightEntry[]
+  meds: MedEntry[]
+  visits: VisitEntry[]
+  observations: HealthObservation[]
+  medicationLogs: MedicationLog[]
 }) {
   return (
-    <button type="button" className="quick-action" onClick={onClick}>
-      <span className="quick-action-icon">{icon}</span>
-      <span>{label}</span>
-    </button>
+    data.shots.length +
+    data.weights.length +
+    data.meds.length +
+    data.visits.length +
+    data.observations.length +
+    data.medicationLogs.length
   )
 }
 
@@ -71,6 +83,7 @@ export default function App() {
   const [activePetId, setActivePetId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<SheetName>(null)
   const [surveySkipped, setSurveySkipped] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
 
   const activePet: Pet | null = useMemo(() => {
     if (data.pets.length === 0) return null
@@ -85,6 +98,23 @@ export default function App() {
   )
   const meds = useMemo(() => data.meds.filter((m) => m.petId === petId), [data.meds, petId])
   const visits = useMemo(() => data.visits.filter((v) => v.petId === petId), [data.visits, petId])
+  const healthEvents = useMemo(
+    () =>
+      data.healthEvents
+        .filter((event) => event.petId === petId)
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+    [data.healthEvents, petId],
+  )
+  const observations = useMemo(
+    () => data.observations.filter((observation) => observation.petId === petId),
+    [data.observations, petId],
+  )
+  const medicationLogs = useMemo(
+    () => data.medicationLogs.filter((log) => log.petId === petId),
+    [data.medicationLogs, petId],
+  )
+  const activeHealthEvent = healthEvents.find((event) => event.status === 'active') ?? null
+  const latestHealthEvent = healthEvents[0] ?? null
   const activeDue = useMemo(() => upcomingDues(shots), [shots])
 
   const totalDue = useMemo(
@@ -95,12 +125,12 @@ export default function App() {
     [data.pets, data.shots],
   )
 
-  const addPet = (input: {
-    name: string
-    species: Species
-    birthday: string
-    avatar: string
-  }) => {
+  const flash = (message: string) => {
+    setToast(message)
+    window.setTimeout(() => setToast((current) => (current === message ? null : current)), 2800)
+  }
+
+  const addPet = (input: { name: string; species: Species; birthday: string; avatar: string }) => {
     const pet: Pet = { id: newId(), createdAt: new Date().toISOString(), ...input }
     update((prev) => ({ ...prev, pets: [...prev.pets, pet] }))
     setActivePetId(pet.id)
@@ -109,305 +139,223 @@ export default function App() {
   const addShot = (input: Omit<Shot, 'id' | 'petId'>) => {
     if (!petId) return
     update((prev) => ({ ...prev, shots: [...prev.shots, { id: newId(), petId, ...input }] }))
+    flash('已收好这条照护记录')
   }
 
   const addWeight = (input: Omit<WeightEntry, 'id' | 'petId'>) => {
     if (!petId) return
     update((prev) => ({ ...prev, weights: [...prev.weights, { id: newId(), petId, ...input }] }))
+    flash('体重已记下，看诊包也会同步更新')
   }
 
   const addMed = (input: Omit<MedEntry, 'id' | 'petId'>) => {
     if (!petId) return
     update((prev) => ({ ...prev, meds: [...prev.meds, { id: newId(), petId, ...input }] }))
+    flash('用药信息已收好')
   }
 
   const addVisit = (input: Omit<VisitEntry, 'id' | 'petId'>) => {
     if (!petId) return
     update((prev) => ({ ...prev, visits: [...prev.visits, { id: newId(), petId, ...input }] }))
+    flash('医生说的话已留下')
+  }
+
+  const addHealthObservation = (draft: ObservationDraft) => {
+    if (!petId) return
+    const now = new Date().toISOString()
+    const existing = draft.eventMode === 'continue' ? activeHealthEvent : null
+    const eventId = existing?.id ?? newId()
+    const observationId = newId()
+    const attachmentIds = draft.files.map(() => newId())
+    const attachmentMeta: AttachmentMeta[] = draft.files.map((file, index) => ({
+      id: attachmentIds[index],
+      petId,
+      observationId,
+      name: file.name,
+      mimeType: file.type,
+      size: file.size,
+      createdAt: now,
+    }))
+    const event: HealthEvent = existing
+      ? {
+          ...existing,
+          updatedAt: now,
+          questions:
+            draft.question && !existing.questions.includes(draft.question)
+              ? [...existing.questions, draft.question]
+              : existing.questions,
+        }
+      : {
+          id: eventId,
+          petId,
+          title: draft.title || '这次不舒服',
+          startedAt: draft.occurredAt,
+          endedAt: '',
+          status: 'active',
+          questions: draft.question ? [draft.question] : [],
+          createdAt: now,
+          updatedAt: now,
+        }
+    const observation: HealthObservation = {
+      id: observationId,
+      petId,
+      eventId,
+      kind: draft.kind,
+      label: draft.label,
+      severity: draft.severity,
+      occurredAt: draft.occurredAt,
+      note: draft.note,
+      attachmentIds,
+      createdAt: now,
+    }
+
+    update((prev) => ({
+      ...prev,
+      healthEvents: prev.healthEvents.some((item) => item.id === event.id)
+        ? prev.healthEvents.map((item) => (item.id === event.id ? event : item))
+        : [...prev.healthEvents, event],
+      observations: [...prev.observations, observation],
+      attachments: [...prev.attachments, ...attachmentMeta],
+    }))
+    if (draft.files.length) {
+      void Promise.all(draft.files.map((file, index) => saveAttachment(attachmentIds[index], file))).then((results) => {
+        if (results.some((ok) => !ok)) {
+          update((prev) => ({
+            ...prev,
+            observations: prev.observations.map((item) =>
+              item.id === observationId
+                ? { ...item, attachmentIds: item.attachmentIds.filter((_, index) => results[index]) }
+                : item,
+            ),
+            attachments: prev.attachments.filter((item) => item.observationId !== observationId || results[attachmentIds.indexOf(item.id)]),
+          }))
+          flash('观察已保存，但有照片没能放进本地附件库')
+        }
+      })
+    }
+    flash(existing ? '这条变化已接到照护轨迹' : '已开始整理这次变化')
+  }
+
+  const resolveHealthEvent = (eventId: string) => {
+    const now = new Date().toISOString()
+    update((prev) => ({
+      ...prev,
+      healthEvents: prev.healthEvents.map((event) =>
+        event.id === eventId ? { ...event, status: 'resolved', endedAt: now, updatedAt: now } : event,
+      ),
+    }))
+    flash('这次变化已经收好，之后仍能在时间线里找到')
+  }
+
+  const checkInMedication = (med: MedEntry) => {
+    if (!petId) return
+    const log: MedicationLog = {
+      id: newId(),
+      petId,
+      medId: med.id,
+      completedAt: new Date().toISOString(),
+      caregiver: data.caregiverName.trim() || '我',
+      status: 'completed',
+      note: '',
+    }
+    update((prev) => ({ ...prev, medicationLogs: [...prev.medicationLogs, log] }))
+    flash(`${med.name} 已记为完成 · ${log.caregiver}`)
   }
 
   const showSurvey = !data.survey && !surveySkipped
-  const answerSurvey = (answer: SurveyAnswer) =>
-    update((prev) => ({ ...prev, survey: answer }))
+  const answerSurvey = (answer: SurveyAnswer) => update((prev) => ({ ...prev, survey: answer }))
 
   return (
     <div className="app-shell">
       <header className="topbar">
         <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">
-            <UiIcon name="paw" size={21} />
-          </span>
+          <span className="brand-mark" aria-hidden="true"><UiIcon name="paw" size={20} weight="fill" /></span>
           <span>
             <span className="brand-name">毛毛档案</span>
-            <span className="brand-promise">把重要的照顾，记得清清楚楚</span>
+            <span className="brand-promise">把每一次变化，整理成说得清的时间线</span>
           </span>
         </div>
         <div className="topbar-actions">
-          {totalDue > 0 ? <span className="attention-summary">{totalDue} 件待留意</span> : null}
-          <button
-            type="button"
-            onClick={() => setSheet('settings')}
-            aria-label="设置"
-            className="icon-action"
-          >
-            <UiIcon name="settings" size={22} />
-          </button>
+          {totalDue > 0 ? <span className="attention-summary"><UiIcon name="clock" size={15} /> {totalDue} 件待留意</span> : null}
+          <button type="button" onClick={() => setSheet('settings')} aria-label="设置" className="icon-action"><UiIcon name="settings" size={21} /></button>
         </div>
       </header>
 
       {saveFailed ? (
-        <div className="page-gutter pb-3">
-          <div className="save-warning" role="alert">
-            <strong>没能存到本地。</strong>
-            如果在用无痕模式，关掉页面记录会丢失，建议换普通窗口。
-          </div>
-        </div>
+        <div className="page-gutter pb-3"><div className="save-warning" role="alert"><strong>这次没能存到本地。</strong> 先保留页面别关；如果正在用无痕模式，换普通窗口后再试一次。</div></div>
       ) : null}
 
       {!activePet ? (
         <main className="page-gutter first-run">
           <section className="welcome-panel">
-            <div className="welcome-pets" aria-hidden="true">
-              <PetAvatar avatar="🐱" className="welcome-pet welcome-pet-cat" decorative />
-              <PetAvatar avatar="🐶" className="welcome-pet welcome-pet-dog" decorative />
-            </div>
             <div className="welcome-copy">
-              <h1>每一次照顾，都有迹可循</h1>
-              <p>疫苗、驱虫、体重、用药和就诊记录，放在一个随时找得到的地方。</p>
+              <p className="eyebrow eyebrow-light">毛毛档案 · 本地优先</p>
+              <h1>把每一次变化，整理成看诊时说得清的时间线。</h1>
+              <p>不用先判断属于哪一类。记下刚刚发现的事实，观察、体重、用药和问题会慢慢收进同一个看诊包。</p>
+              <button type="button" className="welcome-cta" onClick={() => setSheet('pet')}><UiIcon name="plus" size={19} />建立第一份档案</button>
+              <p className="privacy-note"><UiIcon name="lock" size={14} /> 无需注册 · 资料只保存在你的浏览器</p>
             </div>
-            <button type="button" className="welcome-cta" onClick={() => setSheet('pet')}>
-              <UiIcon name="plus" size={19} />
-              添加第一只宠物
-            </button>
-            <p className="privacy-note">无需注册 · 数据只保存在你的浏览器</p>
+            <div className="welcome-scene" aria-hidden="true"><img src={careMascot} alt="" className="welcome-mascot" /><div className="welcome-route"><span /><span /><span /></div></div>
+            <div className="welcome-proof" aria-label="三步照护轨迹">
+              <div><span>01</span><strong>发现一点不同</strong><small>时间和事实先留下</small></div>
+              <div><span>02</span><strong>看诊前收一收</strong><small>资料自动组成看诊包</small></div>
+              <div><span>03</span><strong>回来继续照顾</strong><small>医嘱和用药接上</small></div>
+            </div>
           </section>
-
-          {showSurvey ? (
-            <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} />
-          ) : null}
+          {showSurvey ? <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} /> : null}
         </main>
       ) : (
         <main className="page-gutter dashboard">
-          <div className="pet-nav">
-            <PetSwitcher
-              pets={data.pets}
-              activeId={activePet.id}
-              onSelect={setActivePetId}
-              onAdd={() => setSheet('pet')}
-            />
-          </div>
-
+          <div className="pet-nav"><PetSwitcher pets={data.pets} activeId={activePet.id} onSelect={setActivePetId} onAdd={() => setSheet('pet')} /></div>
           <PetHeader pet={activePet} dueCount={activeDue.length} />
 
-          <nav className="quick-actions" aria-label="快速记录">
-            <QuickAction
-              icon={<UiIcon name="syringe" size={20} />}
-              label="疫苗驱虫"
-              onClick={() => setSheet('shot')}
-            />
-            <QuickAction
-              icon={<UiIcon name="chart" size={20} />}
-              label="体重"
-              onClick={() => setSheet('weight')}
-            />
-            <QuickAction
-              icon={<UiIcon name="pill" size={20} />}
-              label="用药"
-              onClick={() => setSheet('med')}
-            />
-            <QuickAction
-              icon={<UiIcon name="medicalKit" size={20} />}
-              label="就诊"
-              onClick={() => setSheet('visit')}
-            />
-          </nav>
+          <section className="record-focus" aria-labelledby="record-focus-title">
+            <div className="record-focus-copy"><p className="eyebrow">今天的主动作</p><h2 id="record-focus-title">发现一点不同？</h2><p>先记下来，不用马上想清楚原因。时间线会帮你把这次照护慢慢整理好。</p></div>
+            <button type="button" className="primary-care-action" onClick={() => setSheet('event')}><span className="primary-care-icon"><UiIcon name="plus" size={20} /></span><span><strong>记下刚刚的变化</strong><small>食欲、精神、排便或其他</small></span><UiIcon name="arrowRight" size={19} /></button>
+          </section>
 
-          {showSurvey ? (
-            <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} />
-          ) : null}
+          {showSurvey ? <SurveyCard onAnswer={answerSurvey} onSkip={() => setSurveySkipped(true)} /> : null}
+
+          <div className="care-flow-grid">
+            <CareTimeline events={healthEvents} observations={observations} onRecord={() => setSheet('event')} onResolve={resolveHealthEvent} />
+            <VisitPackSummary pet={activePet} event={latestHealthEvent} observations={observations} weights={weights} meds={meds} medicationLogs={medicationLogs} onRecord={() => setSheet('event')} onPrint={() => window.print()} />
+          </div>
+
+          <button type="button" className="secondary-record-button" onClick={() => setSheet('record-menu')}><span className="secondary-record-icon"><UiIcon name="plus" size={17} /></span><span><strong>记录其他照护</strong><small>疫苗、驱虫、体重、用药和就诊</small></span><UiIcon name="chevronRight" size={18} /></button>
 
           <div className="dashboard-grid">
             <div className="dashboard-column">
-              <section className="record-block priority-block">
-                <GroupHeaderRow
-                  title="接下来要做的"
-                  action={
-                    <AddButton onClick={() => setSheet('shot')} label="新增疫苗或驱虫记录" />
-                  }
-                />
-                <div className="group-card">
-                  <DueList shots={shots} />
-                </div>
-              </section>
-
-              <section className="record-block">
-                <GroupHeaderRow
-                  title="体重趋势"
-                  action={<AddButton onClick={() => setSheet('weight')} label="新增体重记录" />}
-                />
-                <div className="group-card">
-                  <WeightChart entries={weights} />
-                  {weights.length > 0 ? (
-                    <div className="subsection-divider">
-                      <WeightList
-                        entries={weights}
-                        onDelete={(id) =>
-                          update((prev) => ({
-                            ...prev,
-                            weights: prev.weights.filter((w) => w.id !== id),
-                          }))
-                        }
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              </section>
+              <section className="record-block priority-block"><GroupHeaderRow title="接下来要做的" action={<AddButton onClick={() => setSheet('shot')} label="新增疫苗或驱虫记录" />} /><div className="group-card"><DueList shots={shots} /></div></section>
+              <section className="record-block"><GroupHeaderRow title="体重趋势" action={<AddButton onClick={() => setSheet('weight')} label="新增体重记录" />} /><div className="group-card"><WeightChart entries={weights} />{weights.length > 0 ? <div className="subsection-divider"><WeightList entries={weights} onDelete={(id) => update((prev) => ({ ...prev, weights: prev.weights.filter((w) => w.id !== id) }))} /></div> : null}</div></section>
             </div>
-
             <div className="dashboard-column">
-              <section className="record-block">
-                <GroupHeaderRow
-                  title="用药"
-                  action={<AddButton onClick={() => setSheet('med')} label="新增用药记录" />}
-                />
-                <div className="group-card">
-                  <MedList
-                    entries={meds}
-                    onDelete={(id) =>
-                      update((prev) => ({ ...prev, meds: prev.meds.filter((m) => m.id !== id) }))
-                    }
-                  />
-                </div>
-              </section>
-
-              <section className="record-block">
-                <GroupHeaderRow
-                  title="就诊记录"
-                  action={<AddButton onClick={() => setSheet('visit')} label="新增就诊记录" />}
-                />
-                <div className="group-card">
-                  <VisitList
-                    entries={visits}
-                    onDelete={(id) =>
-                      update((prev) => ({
-                        ...prev,
-                        visits: prev.visits.filter((v) => v.id !== id),
-                      }))
-                    }
-                  />
-                </div>
-              </section>
+              <section className="record-block"><GroupHeaderRow title="用药接力" action={<AddButton onClick={() => setSheet('med')} label="新增用药记录" />} /><div className="group-card"><MedicationRelay meds={meds} logs={medicationLogs} caregiver={data.caregiverName} onCheckIn={checkInMedication} onDelete={(id) => update((prev) => ({ ...prev, meds: prev.meds.filter((m) => m.id !== id) }))} />{meds.some((med) => Boolean(med.endDate)) ? <details className="history-details"><summary>查看已结束的用药</summary><MedList entries={meds.filter((med) => Boolean(med.endDate))} logs={medicationLogs} caregiver={data.caregiverName} onCheckIn={checkInMedication} onDelete={(id) => update((prev) => ({ ...prev, meds: prev.meds.filter((m) => m.id !== id) }))} /></details> : null}</div></section>
+              <section className="record-block"><GroupHeaderRow title="就诊记录" action={<AddButton onClick={() => setSheet('visit')} label="新增就诊记录" />} /><div className="group-card"><VisitList entries={visits} onDelete={(id) => update((prev) => ({ ...prev, visits: prev.visits.filter((v) => v.id !== id) }))} /></div></section>
             </div>
           </div>
 
-          {shots.length > 0 ? (
-            <section className="record-block wide-block">
-              <GroupHeaderRow title="疫苗与驱虫历史" />
-              <div className="group-card">
-                <ShotHistory
-                  shots={shots}
-                  onDelete={(id) =>
-                    update((prev) => ({ ...prev, shots: prev.shots.filter((s) => s.id !== id) }))
-                  }
-                />
-              </div>
-            </section>
-          ) : null}
-
-          <section className="feedback-strip">
-            <div className="feedback-intro">
-              <h2>用起来哪里还不顺手？</h2>
-              <p>你的想法只保存在本地，导出备份时会一起带上。</p>
-            </div>
-            <FeedbackBox
-              onSubmit={(text) =>
-                update((prev) => ({
-                  ...prev,
-                  feedbacks: [
-                    ...prev.feedbacks,
-                    { id: newId(), text, createdAt: new Date().toISOString() },
-                  ],
-                }))
-              }
-            />
-          </section>
+          {shots.length > 0 ? <section className="record-block wide-block"><GroupHeaderRow title="疫苗与驱虫历史" /><div className="group-card"><ShotHistory shots={shots} onDelete={(id) => update((prev) => ({ ...prev, shots: prev.shots.filter((s) => s.id !== id) }))} /></div></section> : null}
+          <section className="feedback-strip"><div className="feedback-intro"><p className="eyebrow">一起把照护台做好</p><h2>用起来哪里还不顺手？</h2><p>你的想法只保存在本地，导出备份时会一起带上。</p></div><FeedbackBox onSubmit={(text) => update((prev) => ({ ...prev, feedbacks: [...prev.feedbacks, { id: newId(), text, createdAt: new Date().toISOString() }] }))} /></section>
         </main>
       )}
 
-      <footer className="site-footer">
-        <UiIcon name="download" size={16} />
-        数据只存在这台设备的浏览器里，记得偶尔导出备份
-      </footer>
+      <footer className="site-footer"><UiIcon name="lock" size={15} /> 数据只存在这台设备的浏览器里 · 记得偶尔导出备份</footer>
+      {toast ? <div className="toast" role="status" aria-live="polite"><UiIcon name="check" size={17} /> {toast}</div> : null}
 
       <PetFormSheet open={sheet === 'pet'} onClose={() => setSheet(null)} onSubmit={addPet} />
-      <ShotFormSheet
-        open={sheet === 'shot'}
-        species={activePet?.species ?? 'cat'}
-        onClose={() => setSheet(null)}
-        onSubmit={addShot}
-      />
-      <WeightFormSheet
-        open={sheet === 'weight'}
-        onClose={() => setSheet(null)}
-        onSubmit={addWeight}
-      />
+      <ShotFormSheet open={sheet === 'shot'} species={activePet?.species ?? 'cat'} onClose={() => setSheet(null)} onSubmit={addShot} />
+      <WeightFormSheet open={sheet === 'weight'} onClose={() => setSheet(null)} onSubmit={addWeight} />
       <MedFormSheet open={sheet === 'med'} onClose={() => setSheet(null)} onSubmit={addMed} />
       <VisitFormSheet open={sheet === 'visit'} onClose={() => setSheet(null)} onSubmit={addVisit} />
+      {activePet ? <HealthEventComposerSheet open={sheet === 'event'} pet={activePet} activeEvent={activeHealthEvent} onClose={() => setSheet(null)} onSubmit={addHealthObservation} /> : null}
+      <RecordMenuSheet open={sheet === 'record-menu'} onClose={() => setSheet(null)} onChoose={(action) => setSheet(action)} />
 
       <Sheet open={sheet === 'settings'} title="设置" onClose={() => setSheet(null)}>
-        <div className="space-y-4">
-          {data.survey || data.feedbacks.length > 0 ? (
-            <Group header="你的反馈">
-              <ValidationSummary survey={data.survey} feedbacks={data.feedbacks} />
-            </Group>
-          ) : null}
-
-          <Group
-            header="数据"
-            footer="全部在你这台设备的浏览器本地，没有服务器、没有账号。换设备或清缓存会丢，建议导出备份。"
-          >
-            <div className="row-divider">
-              <Row
-                icon={<UiIcon name="download" size={20} />}
-                title="导出备份"
-                subtitle="含所有记录与反馈"
-                onClick={() => exportData(data)}
-              />
-              <Row
-                icon={<UiIcon name="feedback" size={20} />}
-                title="当前数据量"
-                detail={`${data.pets.length} 只 · ${
-                  data.shots.length + data.weights.length + data.meds.length + data.visits.length
-                } 条`}
-              />
-            </div>
-          </Group>
-
-          <Group>
-            <button
-              type="button"
-              className="row w-full text-red transition active:opacity-50"
-              onClick={() => {
-                if (window.confirm('清空所有记录？无法撤销，建议先导出备份。')) {
-                  update(() => ({
-                    version: 1,
-                    pets: [],
-                    shots: [],
-                    weights: [],
-                    meds: [],
-                    visits: [],
-                    survey: data.survey,
-                    feedbacks: data.feedbacks,
-                  }))
-                  setActivePetId(null)
-                  setSheet(null)
-                }
-              }}
-            >
-              <UiIcon name="trash" size={20} />
-              <span className="text-body">清空所有记录</span>
-            </button>
-          </Group>
+        <div className="settings-stack">
+          {data.survey || data.feedbacks.length > 0 ? <Group header="你的反馈"><ValidationSummary survey={data.survey} feedbacks={data.feedbacks} /></Group> : null}
+          <Group header="照护人" footer="只用于记录“谁在什么时候完成了用药”，不会同步给别人。"><FormRow label="名字" stacked><input className="field-boxed" value={data.caregiverName} maxLength={24} onChange={(event) => update((prev) => ({ ...prev, caregiverName: event.target.value }))} placeholder="比如：小满妈妈" /></FormRow></Group>
+          <Group header="数据" footer="全部在你这台设备的浏览器本地，没有服务器、没有账号。换设备或清缓存会丢，建议导出备份。"><div className="row-divider"><Row icon={<UiIcon name="download" size={20} />} title="导出备份" subtitle="含所有结构化记录与反馈" onClick={() => exportData(data)} /><Row icon={<UiIcon name="feedback" size={20} />} title="当前数据量" detail={`${data.pets.length} 只 · ${formatCount(data)} 条`} /></div></Group>
+          <Group><button type="button" className="row w-full text-red transition active:opacity-50" onClick={() => { if (!window.confirm('清空所有记录？无法撤销，建议先导出备份。')) return; update((prev) => ({ ...prev, version: 2, pets: [], shots: [], weights: [], meds: [], visits: [], healthEvents: [], observations: [], attachments: [], medicationLogs: [] })); setActivePetId(null); setSheet(null) }}><UiIcon name="trash" size={20} /><span className="text-body">清空所有记录</span></button></Group>
         </div>
       </Sheet>
     </div>

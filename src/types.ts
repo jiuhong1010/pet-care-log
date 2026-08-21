@@ -57,6 +57,69 @@ export interface VisitEntry {
   note: string
 }
 
+/** 一次需要持续观察的异常，不要求用户先判断疾病名称。 */
+export type HealthEventStatus = 'active' | 'resolved'
+
+export interface HealthEvent {
+  id: string
+  petId: string
+  title: string
+  startedAt: string
+  endedAt: string
+  status: HealthEventStatus
+  questions: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export type HealthObservationKind =
+  | 'appetite'
+  | 'energy'
+  | 'vomiting'
+  | 'stool'
+  | 'urination'
+  | 'breathing'
+  | 'pain'
+  | 'custom'
+
+export type HealthObservationSeverity = 'mild' | 'moderate' | 'severe'
+
+export interface HealthObservation {
+  id: string
+  petId: string
+  eventId: string
+  kind: HealthObservationKind
+  label: string
+  severity: HealthObservationSeverity
+  occurredAt: string
+  note: string
+  attachmentIds: string[]
+  createdAt: string
+}
+
+/** 附件二进制放在 IndexedDB，这里只保存可导出的索引。 */
+export interface AttachmentMeta {
+  id: string
+  petId: string
+  observationId: string
+  name: string
+  mimeType: string
+  size: number
+  createdAt: string
+}
+
+export type MedicationLogStatus = 'completed' | 'skipped'
+
+export interface MedicationLog {
+  id: string
+  petId: string
+  medId: string
+  completedAt: string
+  caregiver: string
+  status: MedicationLogStatus
+  note: string
+}
+
 /** 首屏那一句询问的回答，用于验证需求 */
 export interface SurveyAnswer {
   /** 现在用什么记录 */
@@ -78,17 +141,27 @@ export interface AppData {
   weights: WeightEntry[]
   meds: MedEntry[]
   visits: VisitEntry[]
+  healthEvents: HealthEvent[]
+  observations: HealthObservation[]
+  attachments: AttachmentMeta[]
+  medicationLogs: MedicationLog[]
+  caregiverName: string
   survey: SurveyAnswer | null
   feedbacks: Feedback[]
 }
 
 export const EMPTY_DATA: AppData = {
-  version: 1,
+  version: 2,
   pets: [],
   shots: [],
   weights: [],
   meds: [],
   visits: [],
+  healthEvents: [],
+  observations: [],
+  attachments: [],
+  medicationLogs: [],
+  caregiverName: '我',
   survey: null,
   feedbacks: [],
 }

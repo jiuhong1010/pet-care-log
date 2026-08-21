@@ -22,12 +22,17 @@ export function loadData(): AppData {
     if (!parsed || typeof parsed !== 'object') return { ...EMPTY_DATA }
     const d = parsed as Partial<AppData>
     return {
-      version: 1,
+      version: 2,
       pets: Array.isArray(d.pets) ? d.pets : [],
       shots: Array.isArray(d.shots) ? d.shots : [],
       weights: Array.isArray(d.weights) ? d.weights : [],
       meds: Array.isArray(d.meds) ? d.meds : [],
       visits: Array.isArray(d.visits) ? d.visits : [],
+      healthEvents: Array.isArray(d.healthEvents) ? d.healthEvents : [],
+      observations: Array.isArray(d.observations) ? d.observations : [],
+      attachments: Array.isArray(d.attachments) ? d.attachments : [],
+      medicationLogs: Array.isArray(d.medicationLogs) ? d.medicationLogs : [],
+      caregiverName: typeof d.caregiverName === 'string' ? d.caregiverName : '我',
       survey: d.survey ?? null,
       feedbacks: Array.isArray(d.feedbacks) ? d.feedbacks : [],
     }

@@ -91,6 +91,26 @@ export function shortDate(iso: string): string {
   return d.getFullYear() === thisYear ? md : `${d.getFullYear()}年${md}`
 }
 
+/** 把 ISO 时间展示为适合手机时间线的本地日期和时间。 */
+export function shortDateTime(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  const date = shortDate(toISODate(d))
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  return `${date} ${time}`
+}
+
+/** datetime-local 控件需要的本地值，不带时区后缀。 */
+export function localDateTimeInputValue(date = new Date()): string {
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+  return local.toISOString().slice(0, 16)
+}
+
+export function isoFromLocalDateTime(value: string): string {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString()
+}
+
 /** 图表轴用的极简日期「7/1」，不带年份以免在窄屏溢出 */
 export function axisDate(iso: string): string {
   const d = parseISODate(iso)

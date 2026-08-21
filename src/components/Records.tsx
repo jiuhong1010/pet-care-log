@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { MedEntry, VisitEntry, WeightEntry } from '../types'
-import { shortDate, todayISO } from '../lib/date'
+import type { MedEntry, MedicationLog, VisitEntry, WeightEntry } from '../types'
+import { shortDate, shortDateTime, todayISO } from '../lib/date'
 import { EmptyState, FormRow, Group, Row, Sheet } from './ui'
 import { UiIcon } from './UiIcon'
 
@@ -212,9 +212,15 @@ export function MedFormSheet({
 
 export function MedList({
   entries,
+  logs = [],
+  caregiver = '我',
+  onCheckIn,
   onDelete,
 }: {
   entries: MedEntry[]
+  logs?: MedicationLog[]
+  caregiver?: string
+  onCheckIn?: (med: MedEntry) => void
   onDelete: (id: string) => void
 }) {
   const sorted = [...entries].sort((a, b) => b.startDate.localeCompare(a.startDate))
@@ -231,6 +237,9 @@ export function MedList({
     <div className="row-divider">
       {sorted.map((m) => {
         const ongoing = !m.endDate
+        const last = logs
+          .filter((log) => log.medId === m.id && log.status === 'completed')
+          .sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0]
         return (
           <Row
             key={m.id}
@@ -249,10 +258,24 @@ export function MedList({
                 {shortDate(m.startDate)}
                 {m.endDate ? ` 到 ${shortDate(m.endDate)}` : ' 起'}
                 {m.note ? ` · ${m.note}` : ''}
+                {ongoing && last ? ` · 上次 ${shortDateTime(last.completedAt)}（${last.caregiver || caregiver}）` : ''}
               </>
             }
             trailing={
-              <DeleteButton onClick={() => onDelete(m.id)} label={`删除 ${m.name}`} />
+              <span className="flex shrink-0 items-center gap-1">
+                {ongoing && onCheckIn ? (
+                  <button
+                    type="button"
+                    className="med-checkin"
+                    onClick={() => onCheckIn(m)}
+                    aria-label={`记录 ${m.name} 已用药`}
+                  >
+                    <UiIcon name="check" size={15} />
+                    <span>已用</span>
+                  </button>
+                ) : null}
+                <DeleteButton onClick={() => onDelete(m.id)} label={`删除 ${m.name}`} />
+              </span>
             }
           />
         )
