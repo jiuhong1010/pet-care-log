@@ -1,24 +1,26 @@
-# Pet avatar generation prompt
+# Pet avatar standalone asset specification
 
-Use case: stylized-concept
+Use case: background-extraction
 
-Asset type: implementation bitmap asset for pet profile avatars in a calm pet-care web app
+Asset type: ten standalone transparent pet portraits for a calm pet-care web app
 
-Primary request: Create one polished contact sheet containing exactly ten expressive pet portrait illustrations, arranged in an exact 5-column by 2-row grid with equal cells.
+Source: the approved semi-photorealistic 5×2 portrait sheet, used only as identity and style source.
 
 Subjects and fixed order:
 
-- Top row: orange tabby cat; silver-gray cat; black cat; golden retriever puppy; Shiba Inu dog.
-- Bottom row: white poodle; cream lop-eared rabbit; golden hamster; green parrot; small green turtle.
+- Orange tabby cat
+- Silver-gray cat
+- Black cat
+- Golden retriever puppy
+- Shiba Inu dog
+- White poodle
+- Cream lop-eared rabbit
+- Golden hamster
+- Green parrot
+- Small green turtle
 
-Style/medium: refined soft-dimensional editorial illustration with subtle clay-like depth, warm and trustworthy, expressive and recognizable, sophisticated rather than childish or toy-like.
+Composition/framing: one pet per 256×256 transparent PNG; subject visual height 210px; centered horizontally; shared bottom baseline at y=231; full ears, collar, chest, wings, shell, and limbs preserved where applicable.
 
-Composition/framing: one centered head-and-shoulders portrait per cell, front or slight three-quarter view, consistent scale, generous clear padding around every subject, suitable for circular and rounded-square crops. No subject may cross into another cell.
+Processing: identify the largest connected alpha subject around each source cell, keep only that subject, remove neighboring fragments, resize with premultiplied-alpha bilinear sampling, and place it on the standardized canvas.
 
-Lighting/mood: soft studio lighting, calm and friendly.
-
-Color palette: natural animal colors, restrained indigo and muted sage accents only in tiny collar details if needed.
-
-Constraints: exact 5x2 ordering; consistent visual style, scale, light direction, and detail; clean silhouette and edges; no grid lines, no cell borders, no text, no labels, no logos, no watermark.
-
-UI glyph lock: no icons, no UI symbols, no readable text, no logo, no watermark, no status bar, no battery/Wi-Fi/signal glyphs, no arrows, no gear, no menu dots, no plus/minus, no power symbol, no playback controls, no tab icons, no toggles, no status dots.
+Constraints: genuine alpha transparency; exactly one animal per file; no frame, no background, no neighboring fragments, no text, no labels, no logos, no watermark, no UI glyphs or controls.

@@ -1,29 +1,25 @@
-import avatarSprite from '../assets/generated/pet-avatar-sprite-v2.png'
+import blackCat from '../assets/generated/pet-avatars-v3/black-cat.png'
+import goldenRetriever from '../assets/generated/pet-avatars-v3/golden-retriever.png'
+import greenParrot from '../assets/generated/pet-avatars-v3/green-parrot.png'
+import hamster from '../assets/generated/pet-avatars-v3/hamster.png'
+import lopRabbit from '../assets/generated/pet-avatars-v3/lop-rabbit.png'
+import orangeCat from '../assets/generated/pet-avatars-v3/orange-cat.png'
+import shibaInu from '../assets/generated/pet-avatars-v3/shiba-inu.png'
+import silverCat from '../assets/generated/pet-avatars-v3/silver-cat.png'
+import turtle from '../assets/generated/pet-avatars-v3/turtle.png'
+import whitePoodle from '../assets/generated/pet-avatars-v3/white-poodle.png'
 
 export const PET_AVATAR_OPTIONS = [
-  { value: '🐱', label: '橘猫' },
-  { value: '🐈', label: '银灰猫' },
-  { value: '🐈‍⬛', label: '黑猫' },
-  { value: '🐶', label: '金毛犬' },
-  { value: '🐕', label: '柴犬' },
-  { value: '🐩', label: '白色贵宾犬' },
-  { value: '🐰', label: '垂耳兔' },
-  { value: '🐹', label: '金丝熊' },
-  { value: '🦜', label: '绿色鹦鹉' },
-  { value: '🐢', label: '小乌龟' },
-] as const
-
-const PORTRAIT_FRAMES = [
-  { vertical: '0%', scale: 1.18, x: '0%', y: '0%', clipLeft: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '-1%', clipLeft: '0%' },
-  { vertical: '0%', scale: 1.15, x: '0%', y: '0%', clipLeft: '8%' },
-  { vertical: '100%', scale: 1.1, x: '0%', y: '0%', clipLeft: '0%' },
-  { vertical: '100%', scale: 1.1, x: '0%', y: '0%', clipLeft: '8%' },
-  { vertical: '100%', scale: 1.12, x: '0%', y: '0%', clipLeft: '0%' },
-  { vertical: '100%', scale: 1.12, x: '-1%', y: '-1%', clipLeft: '0%' },
-  { vertical: '100%', scale: 1.25, x: '0%', y: '-2%', clipLeft: '5%' },
+  { value: '🐱', label: '橘猫', image: orangeCat },
+  { value: '🐈', label: '银灰猫', image: silverCat },
+  { value: '🐈‍⬛', label: '黑猫', image: blackCat },
+  { value: '🐶', label: '金毛犬', image: goldenRetriever },
+  { value: '🐕', label: '柴犬', image: shibaInu },
+  { value: '🐩', label: '白色贵宾犬', image: whitePoodle },
+  { value: '🐰', label: '垂耳兔', image: lopRabbit },
+  { value: '🐹', label: '金丝熊', image: hamster },
+  { value: '🦜', label: '绿色鹦鹉', image: greenParrot },
+  { value: '🐢', label: '小乌龟', image: turtle },
 ] as const
 
 type PetAvatarProps = {
@@ -37,13 +33,9 @@ function avatarDetails(avatar: string) {
   return PET_AVATAR_OPTIONS[index >= 0 ? index : 0]
 }
 
-/** 从 5×2 插画图集中裁出单只宠物；旧数据中的 emoji 值继续兼容。 */
+/** 独立透明肖像使用统一画布；旧数据中的 emoji 值继续兼容。 */
 export function PetAvatar({ avatar, className = '', decorative = false }: PetAvatarProps) {
   const details = avatarDetails(avatar)
-  const index = PET_AVATAR_OPTIONS.indexOf(details)
-  const column = index % 5
-  const horizontalPosition = column * 25
-  const frame = PORTRAIT_FRAMES[index]
 
   return (
     <span
@@ -52,15 +44,11 @@ export function PetAvatar({ avatar, className = '', decorative = false }: PetAva
       aria-label={decorative ? undefined : `${details.label}头像`}
       role={decorative ? undefined : 'img'}
     >
-      <span
+      <img
         className="pet-portrait-art"
-        style={{
-          backgroundImage: `url(${avatarSprite})`,
-          backgroundPosition: `${horizontalPosition}% ${frame.vertical}`,
-          clipPath: `inset(0 0 0 ${frame.clipLeft})`,
-          transform: `translateX(-50%) translate(${frame.x}, ${frame.y}) scale(${frame.scale})`,
-        }}
-        aria-hidden="true"
+        src={details.image}
+        alt=""
+        draggable="false"
       />
     </span>
   )

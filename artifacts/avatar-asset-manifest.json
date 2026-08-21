@@ -1,15 +1,16 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "workflowMode": "redesign",
   "executionMode": "single-agent",
   "sourceOfTruth": [
     "Existing 安静的照护台 interface and design tokens",
-    "Inspected generated 5x2 pet portrait contact sheet"
+    "User screenshots identifying sprite bleed and inconsistent portrait heights",
+    "Approved semi-photorealistic pet portrait source sheet"
   ],
-  "imageChannel": "native-image2 source=system-imagegen",
+  "imageChannel": "native-image2 source=system-imagegen; deterministic alpha normalization from approved source",
   "assets": [
     {
-      "id": "pet-avatar-sprite-v2",
+      "id": "pet-avatar-set-v3",
       "uiLocations": [
         "first-run welcome illustration",
         "pet switcher",
@@ -17,20 +18,24 @@
         "pet avatar picker"
       ],
       "type": "illustration",
-      "implementation": "image2-asset",
+      "implementation": "ten standalone transparent PNG assets",
       "cssSlotSizes": ["28x34", "74x88", "86x104", "90x108", "100x120"],
-      "exportSize": "960x640",
-      "ratio": "3:2 contact sheet, 5 columns x 2 rows",
-      "postProcessing": "Alpha-preserving resize from 1536x1024 to 960x640",
-      "cropStrategy": "Nested CSS sprite crop with fixed portrait slots, per-animal optical calibration, and boundary masks for subjects crossing adjacent sprite cells",
-      "generatedOutput": "/Users/bytedance/.codex/generated_images/01a01e8d-1000-7572-a5b0-cae701da0678/exec-bde9f982-a861-480f-9b28-3b9f966de697.png",
-      "targetPath": "src/assets/generated/pet-avatar-sprite-v2.png",
-      "provenance": "system imagegen session record",
+      "exportSize": "256x256 each",
+      "ratio": "1:1 transparent canvas",
+      "subjectHeight": "210px",
+      "baseline": "y=231",
+      "postProcessing": "Connected-alpha subject isolation and premultiplied-alpha bilinear normalization",
+      "cropStrategy": "No runtime crop; object-fit contain inside one shared frame system",
+      "sourcePath": "src/assets/generated/pet-avatar-sprite-v2.png",
+      "targetPath": "src/assets/generated/pet-avatars-v3/*.png",
+      "processingScript": "scripts/split-pet-avatars.mjs",
+      "provenance": "system imagegen source asset plus deterministic local extraction",
       "negativeConstraints": [
+        "no neighboring pet fragments",
         "no readable text",
         "no logo or watermark",
         "no UI glyphs or controls",
-        "no grid lines or cell borders"
+        "no baked background or checkerboard"
       ]
     }
   ]

@@ -486,15 +486,15 @@
 
 .pet-portrait-art {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
+  inset: 0;
   display: block;
-  width: 72%;
+  width: 100%;
+  height: 100%;
   border-radius: inherit;
-  background-repeat: no-repeat;
-  background-size: 500% auto;
-  transform-origin: center;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
 }
 
 .pet-switch-avatar {
@@ -534,7 +534,7 @@
   height: 88px;
   flex: none;
   place-items: center;
-  border: 2px solid transparent;
+  border: 2px solid var(--c-separator);
   border-radius: 19px;
   padding: 3px;
   background: transparent;

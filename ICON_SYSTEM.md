@@ -21,4 +21,4 @@
 | download | 导出备份 | DownloadSimple | 16 / 20 | regular | 按钮 / 设置行 | 周边真实文字 |
 | feedback | 反馈入口 | ChatCircleDots | 20 | regular | 设置行 | 周边真实文字 |
 
-宠物头像是通过 image2 生成的插画图集，属于身份内容资产，不承担设置、导航、状态或快捷操作 glyph 的职责。数据层继续保留原 emoji 值，以兼容已有记录和导入备份。
+宠物头像是由 image2 源素材规范化得到的十张独立透明 PNG，属于身份内容资产，不承担设置、导航、状态或快捷操作 glyph 的职责。数据层继续保留原 emoji 值，以兼容已有记录和导入备份。
