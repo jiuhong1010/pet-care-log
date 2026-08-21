@@ -1,4 +1,3 @@
-import timelineCat from '../assets/generated/timeline-cat-v1.png'
 import medicationArt from '../assets/generated/story-thumbnails/medication.png'
 import observationArt from '../assets/generated/story-thumbnails/observation.png'
 import vaccineArt from '../assets/generated/story-thumbnails/vaccine.png'
@@ -143,7 +142,12 @@ export function TodayCareScene({
       <div className="today-story-canvas">
         <span className="story-blob story-blob-one" aria-hidden="true" />
         <span className="story-blob story-blob-two" aria-hidden="true" />
-        <img className="story-cat" src={timelineCat} alt="" aria-hidden="true" />
+        <PetAvatar
+          key={`${pet.id}-${pet.avatar}`}
+          avatar={pet.avatar}
+          className="story-cat story-cat-pet"
+          decorative
+        />
 
         <div className="story-trail">
           <svg

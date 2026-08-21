@@ -298,7 +298,6 @@ export default function App() {
         <div className="brand-lockup">
           <span>
             <span className="brand-name">毛毛档案</span>
-            <span className="brand-promise">把每一次变化，整理成说得清的时间线</span>
           </span>
         </div>
         <div className="topbar-actions">
@@ -367,8 +366,7 @@ export default function App() {
               <div className="timeline-view">
                 <section className="view-intro timeline-intro" aria-labelledby="timeline-view-heading">
                   <div className="view-intro-copy">
-                    <p className="page-context">差异化功能 · 连续观察</p>
-                    <h2 id="timeline-view-heading">变化不是散落的记录，而是一段有起点和进展的故事</h2>
+                    <h2 id="timeline-view-heading">连续观察</h2>
                     <p>同一次不舒服会自动收进一条时间线，看诊时能快速说明何时开始、如何变化、现在怎样。</p>
                     <button type="button" className="btn-tinted" onClick={() => setSheet('event')}><UiIcon name="plus" size={17} />继续记录</button>
                   </div>
@@ -392,8 +390,7 @@ export default function App() {
               <div className="pack-view">
                 <section className="view-intro pack-intro" aria-labelledby="pack-view-heading">
                   <div className="view-intro-copy">
-                    <p className="page-context">差异化功能 · 看诊前整理</p>
-                    <h2 id="pack-view-heading">不用在候诊室里临时回忆</h2>
+                    <h2 id="pack-view-heading">看诊包</h2>
                     <p>观察、最近体重、当前用药和想问的问题会自动汇成一张看诊卡，打印与分享都由你决定。</p>
                   </div>
                   <FeatureIllustration name="visitPack" className="view-intro-art" />

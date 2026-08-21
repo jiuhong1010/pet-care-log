@@ -970,6 +970,25 @@ p {
   user-select: none;
 }
 
+/* The selected pet becomes the scene's focal point; the key on PetAvatar
+   lets this transition run only when the user actually changes pets. */
+.story-cat-pet {
+  top: 0.75rem;
+  right: 2%;
+  width: min(15rem, 62vw);
+  height: min(15rem, 62vw);
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  mix-blend-mode: multiply;
+  animation: pet-hero-swap 420ms var(--ease-out-quart) both;
+}
+
+.story-cat-pet .pet-portrait-art {
+  padding: 0;
+}
+
 .story-trail {
   position: relative;
   z-index: 3;
@@ -996,6 +1015,9 @@ p {
   stroke-width: 3;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
+  stroke-dasharray: 640;
+  stroke-dashoffset: 640;
+  animation: story-route-draw 720ms var(--ease-out-quart) 60ms forwards;
 }
 
 .story-node {
@@ -1013,8 +1035,13 @@ p {
   background: rgb(var(--c-bg-card) / 0.94);
   color: var(--ink);
   text-align: left;
+  animation: story-node-in 360ms var(--ease-out-quart) both;
+  animation-delay: 90ms;
   transition: background 180ms var(--ease-out-quart), transform 180ms var(--ease-out-quart);
 }
+
+.story-node-2 { animation-delay: 150ms; }
+.story-node-3 { animation-delay: 210ms; }
 
 .story-node::before {
   content: '';
@@ -1176,6 +1203,13 @@ p {
   transition: filter 180ms var(--ease-out-quart), transform 180ms var(--ease-out-quart);
 }
 
+.pet-switch:active,
+.story-node:active,
+.story-primary-action:active,
+.mobile-record-action:active {
+  transform: scale(0.98);
+}
+
 .mobile-record-action {
   display: none;
 }
@@ -1317,6 +1351,13 @@ p {
     top: -1rem;
     right: 5%;
     width: min(30rem, 49vw);
+  }
+
+  .story-cat-pet {
+    top: 0.25rem;
+    right: 5%;
+    width: min(21rem, 34vw);
+    height: min(21rem, 34vw);
   }
 
   .story-blob-one {
@@ -1606,7 +1647,10 @@ p {
 @media (prefers-reduced-motion: reduce) {
   .workspace-content,
   .timeline-node,
-  .toast {
+  .toast,
+  .story-cat-pet,
+  .story-node,
+  .story-route path {
     animation: none !important;
   }
 
@@ -1621,4 +1665,18 @@ p {
 @keyframes workspace-in {
   from { opacity: 0.75; transform: translateY(0.25rem); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pet-hero-swap {
+  from { opacity: 0; transform: translate3d(0.75rem, 0.5rem, 0) scale(0.92); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes story-node-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes story-route-draw {
+  to { stroke-dashoffset: 0; }
 }
